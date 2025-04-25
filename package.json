@@ -1,0 +1,32 @@
+{
+  "name": "cavos-wallet-provider",
+  "version": "1.0.0",
+  "description": "Cavos wallet provider service",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/adrianvrj/cavos-wallet-provider.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/adrianvrj/cavos-wallet-provider/issues"
+  },
+  "homepage": "https://github.com/adrianvrj/cavos-wallet-provider#readme",
+  "dependencies": {
+    "bcryptjs": "^3.0.2",
+    "crypto": "^1.0.1",
+    "crypto-js": "^4.2.0",
+    "dotenv": "^16.5.0",
+    "express": "^5.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "starknet": "^6.24.1"
+  },
+  "devDependencies": {
+    "@types/crypto-js": "^4.2.2"
+  }
+}
