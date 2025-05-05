@@ -93,6 +93,40 @@ export const getVesuPools = async () => {
   }
 };
 
+export const getVesuPoolUSDCAPYByName = async (
+  poolName: string
+): Promise<number | null> => {
+  try {
+    const allPools = await getVesuPools();
+
+    const foundPool = allPools.find(
+      (pool: { name: string }) => pool.name === poolName
+    );
+
+    if (!foundPool) {
+      console.error(`Pool "${poolName}" not found`);
+    }
+
+    const usdcAsset = foundPool.assets.find(
+      (asset: { symbol: string }) => asset.symbol === "USDC"
+    );
+
+    if (!usdcAsset) {
+      console.error(`USDC asset not found in pool "${poolName}"`);
+      return 0;
+    }
+    const apy = Number(usdcAsset.apy || 0);
+    const defiSpringApy = Number(usdcAsset.defiSpringApy || 0);
+    return apy + defiSpringApy;
+  } catch (error: any) {
+    console.error(
+      "Error fetching USDC APY:",
+      error?.response?.data || error.message
+    );
+    return 0;
+  }
+};
+
 const formatVesuPool = (pool: any) => ({
   id: pool.id,
   name: pool.name,
