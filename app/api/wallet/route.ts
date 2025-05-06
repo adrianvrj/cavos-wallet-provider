@@ -1,21 +1,10 @@
 import { NextResponse } from 'next/server';
 import { RpcProvider, stark, ec, CairoCustomEnum, CairoOption, CallData, Account, num, hash } from 'starknet';
 import type { DeploymentData } from "@avnu/gasless-sdk";
-import CryptoJs from 'crypto-js';
+import { decryptPin, encryptSecretWithPin } from '@/lib/utils';
 
 const CAVOS_TOKEN = process.env.CAVOS_TOKEN;
 const SECRET_TOKEN = process.env.SECRET_TOKEN;
-
-function decryptPin(encryptedPin: any) {
-    const bytes = CryptoJs.AES.decrypt(encryptedPin, SECRET_TOKEN ? SECRET_TOKEN : "");
-    return bytes.toString(CryptoJs.enc.Utf8);
-}
-
-function encryptSecretWithPin(pin: any, secretHex: string) {
-    const cleanHex = secretHex.startsWith("0x") ? secretHex.slice(2) : secretHex;
-    const encrypted = CryptoJs.AES.encrypt(cleanHex, pin).toString();
-    return encrypted;
-}
 
 export async function POST(req: Request) {
     try {
@@ -37,7 +26,7 @@ export async function POST(req: Request) {
             );
         }
         let { pin } = await req.json();
-        pin = decryptPin(pin);
+        pin = decryptPin(pin, SECRET_TOKEN);
         const provider = new RpcProvider({ nodeUrl: process.env.RPC });
         try {
             const argentXaccountClassHash =
@@ -94,7 +83,7 @@ export async function POST(req: Request) {
                     'X-API-Key': process.env.CHIPI_API_KEY || "",
                 },
                 body: JSON.stringify({
-                    publicKey: `${AXcontractAddress}`,
+                    publicKey: AXcontractAddress,
                     userSignature: {
                         r: (userSignature as any).r.toString(),
                         s: (userSignature as any).s.toString(),
@@ -110,12 +99,6 @@ export async function POST(req: Request) {
                     }
                 }),
             });
-
-            const executeTransaction = await executeTransactionResponse.json();
-            console.log(executeTransaction);
-            if (executeTransaction.statusCode == 500) {
-                return NextResponse.json({ data: executeTransaction.message }, { status: 500 });
-            }
 
             return NextResponse.json({
                 public_key: starkKeyPubAX,
