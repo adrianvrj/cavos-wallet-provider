@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@avnu/gasless-sdk": "^0.1.8",
+    "axios": "^1.9.0",
     "crypto-js": "^4.2.0",
     "immutable": "^5.1.1",
     "next": "15.3.1",
