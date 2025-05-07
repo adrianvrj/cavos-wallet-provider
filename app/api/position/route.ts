@@ -11,7 +11,6 @@ export async function POST(req: Request) {
     try {
         const authHeader = req.headers.get('Authorization');
         if (!authHeader || !authHeader.startsWith('Bearer ')) {
-            console.log(authHeader, CAVOS_TOKEN);
             return NextResponse.json(
                 { message: 'Unauthorized: Missing or invalid Bearer token' },
                 { status: 401 }
@@ -20,16 +19,14 @@ export async function POST(req: Request) {
 
         const token = authHeader.split(' ')[1];
         if (token !== CAVOS_TOKEN) {
-            console.log(token, CAVOS_TOKEN);
             return NextResponse.json(
                 { message: 'Unauthorized: Invalid Bearer token' },
                 { status: 401 }
             );
         }
-        let { amount, address, publicKey, hashedPk, hashedPin, deployed } = await req.json();
+        let { amount, address, hashedPk, hashedPin } = await req.json();
         let pin = decryptPin(hashedPin, SECRET_TOKEN);
         let pk = decryptSecretWithPin(hashedPk, pin);
-        console.log("pk", pk);
         const provider = new RpcProvider({ nodeUrl: process.env.RPC });
         try {
             const account = new Account(
@@ -63,14 +60,14 @@ export async function POST(req: Request) {
                 method: "POST",
                 headers: {
                     'Content-Type': 'application/json',
-                    'x-api-key': "c37c52b7-ea5a-4426-8121-329a78354b0b",
+                    'x-api-key': process.env.AVNU_API_KEY || "",
                     'ask-signature': "false",
                 },
                 body: JSON.stringify({
                     "userAddress": address,
                     "calls": calls,
                     "gasTokenAddress": "0x53c91253bc9682c04929ca02ed00b3e423f6710d2ee7e0d5ebb06f3ecf368a8",
-                    "maxGasTokenAmount": toBeHex(BigInt(1000000)),
+                    "maxGasTokenAmount": toBeHex(BigInt(10000)),
                     "accountClassHash": null
                 }),
             });
@@ -93,7 +90,7 @@ export async function POST(req: Request) {
                 method: "POST",
                 headers: {
                     'Content-Type': 'application/json',
-                    'x-api-key': "c37c52b7-ea5a-4426-8121-329a78354b0b",
+                    'x-api-key': process.env.AVNU_API_KEY || "",
                     'ask-signature': "true",
                 },
                 body: JSON.stringify({
