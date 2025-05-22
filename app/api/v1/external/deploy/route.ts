@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { RpcProvider, stark, ec, CairoCustomEnum, CairoOption, CallData, Account, num, hash, Call } from 'starknet';
+import { RpcProvider, stark, ec, CairoCustomEnum, CairoOption, CallData, Account, num, hash, Call, CairoOptionVariant } from 'starknet';
 import { formatCall, type DeploymentData } from "@avnu/gasless-sdk";
 import { encryptSecretWithPin } from '@/lib/utils';
 import { createClient } from '@supabase/supabase-js';
@@ -15,6 +15,8 @@ const supabase = createClient(
             detectSessionInUrl: false,
         },
     });
+
+const ARGENT_ACCOUNT_CLASS_HASH = "0x1a736d6ed154502257f02b1ccdf4d9d1089f80811cd6acad48e6b6a9d1f2003";
 
 export async function POST(req: Request) {
     try {
@@ -48,56 +50,45 @@ export async function POST(req: Request) {
                 { status: 400 }
             );
         }
-        const provider = new RpcProvider({ nodeUrl: process.env.RPC });
+
+        if (network !== 'sepolia' && network !== 'mainnet') {
+            return NextResponse.json(
+                { message: 'Network is not supported' },
+                { status: 400 }
+            );
+        }
+
+        let provider = network === 'sepolia' ? new RpcProvider({ nodeUrl: process.env.SEPOLIA_RPC }) : new RpcProvider({ nodeUrl: process.env.RPC });
+
+        const avnuPaymasterUrl = network === 'sepolia' ? 'https://sepolia.api.avnu.fi' : 'https://starknet.api.avnu.fi'
+
         try {
-
-            let calls: Call[] = [
-                {
-                    entrypoint: 'approve',
-                    contractAddress: '0x049d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7',
-                    calldata: ['0x0498E484Da80A8895c77DcaD5362aE483758050F22a92aF29A385459b0365BFE', '0xf', '0x0'],
-                },
-            ];
-
-            calls = formatCall(calls);
-
             const argentXaccountClassHash =
-                '0x1a736d6ed154502257f02b1ccdf4d9d1089f80811cd6acad48e6b6a9d1f2003';
-
+                "0x01a736d6ed154502257f02b1ccdf4d9d1089f80811cd6acad48e6b6a9d1f2003";
             const privateKeyAX = stark.randomAddress();
             const starkKeyPubAX = ec.starkCurve.getStarkKey(privateKeyAX);
-
-            const axSigner = new CairoCustomEnum({ Starknet: { pubkey: starkKeyPubAX } });
-            const axGuardian = new CairoOption(1);
-            const AXConstructorCallData = CallData.compile({
-                owner: axSigner,
-                guardian: axGuardian,
-            });
-            const AXcontractAddress = hash.calculateContractAddressFromHash(
-                starkKeyPubAX,
-                argentXaccountClassHash,
-                AXConstructorCallData,
-                0
-            );
-
-            const account = new Account(provider, AXcontractAddress, privateKeyAX);
-
+            const axGuardian = new CairoOption<unknown>(CairoOptionVariant.None);
             const ArgentAAConstructorCallData = CallData.compile({
                 owner: starkKeyPubAX,
                 guardian: axGuardian,
             });
-
-            const deploymentData: DeploymentData = {
+            const AXcontractAddress = hash.calculateContractAddressFromHash(
+                argentXaccountClassHash,
+                argentXaccountClassHash,
+                ArgentAAConstructorCallData,
+                0
+            );
+            console.log("AXcontractAddress", AXcontractAddress);
+            const deploymentData = {
                 class_hash: argentXaccountClassHash,
-                salt: starkKeyPubAX,
-                unique: `${num.toHex(1)}`,
+                salt: argentXaccountClassHash,
+                unique: "0x0",
                 calldata: ArgentAAConstructorCallData.map(x => {
                     const hex = BigInt(x).toString(16);
                     return `0x${hex}`;
                 })
             };
-
-            const typeDataResponse = await fetch("https://starknet.api.avnu.fi/paymaster/v1/build-typed-data", {
+            const typeDataResponse = await fetch(`${avnuPaymasterUrl}/paymaster/v1/build-typed-data`, {
                 method: "POST",
                 headers: {
                     'Content-Type': 'application/json',
@@ -110,22 +101,11 @@ export async function POST(req: Request) {
                     calls: [],
                 })
             });
-
-
             if (!typeDataResponse.ok) {
                 console.error('Error building typed data:', await typeDataResponse.text());
                 throw new Error('Failed to build typed data');
             }
-
-            const typedData = await typeDataResponse.json();
-            let userSignature = (await account.signMessage(typedData));
-            if (Array.isArray(userSignature)) {
-                userSignature = userSignature.map((sig) => toBeHex(BigInt(sig)));
-            } else if (userSignature.r && userSignature.s) {
-                userSignature = [toBeHex(BigInt(userSignature.r)), toBeHex(BigInt(userSignature.s))];
-            }
-
-            const executeResponse = await fetch('https://starknet.api.avnu.fi/paymaster/v1/deploy-account', {
+            const executeResponse = await fetch(`${avnuPaymasterUrl}/paymaster/v1/deploy-account`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -136,17 +116,14 @@ export async function POST(req: Request) {
                     "deploymentData": deploymentData,
                 })
             });
-
             if (!executeResponse.ok) {
                 const errorText = await executeResponse.text();
                 console.error('Error executing deployment:', errorText);
                 throw new Error('Failed to execute deployment');
             }
-
             const executeResult = await executeResponse.json();
-
+            console.log('Execute result:', executeResult);
             const encryptedPK = encryptSecretWithPin(org.hash_secret, privateKeyAX);
-
             const { error: txError } = await supabase
                 .from('external_wallet')
                 .insert([
@@ -155,6 +132,7 @@ export async function POST(req: Request) {
                         public_key: starkKeyPubAX,
                         private_key: encryptedPK,
                         address: AXcontractAddress,
+                        network: network,
                     },
                 ]);
 
