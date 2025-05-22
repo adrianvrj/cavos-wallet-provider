@@ -1,14 +1,11 @@
 import { NextResponse } from 'next/server';
 import { RpcProvider, stark, ec, CairoCustomEnum, CairoOption, CallData, Account, num, hash, Call } from 'starknet';
 import { formatCall, type DeploymentData } from "@avnu/gasless-sdk";
-import { decryptPin, encryptSecretWithPin, formatAmount } from '@/lib/utils';
+import { encryptSecretWithPin } from '@/lib/utils';
 import { createClient } from '@supabase/supabase-js';
 import { toBeHex } from 'ethers';
 
-const CAVOS_TOKEN = process.env.CAVOS_TOKEN;
-const SECRET_TOKEN = process.env.SECRET_TOKEN;
-
-export const supabase = createClient(
+const supabase = createClient(
     process.env.SUPABASE_URL || "",
     process.env.SUPABASE_ANON_KEY || "",
     {
