@@ -1,10 +1,20 @@
 import { NextResponse } from 'next/server';
-import { RpcProvider, stark, ec, CairoCustomEnum, CairoOption, CallData, Account, num, hash } from 'starknet';
-import type { DeploymentData } from "@avnu/gasless-sdk";
-import { decryptPin, encryptSecretWithPin } from '@/lib/utils';
+import { RpcProvider, stark, ec, CairoCustomEnum, CairoOption, CallData, Account, num, hash, Call } from 'starknet';
+import { formatCall, type DeploymentData } from "@avnu/gasless-sdk";
+import { encryptSecretWithPin } from '@/lib/utils';
+import { createClient } from '@supabase/supabase-js';
+import { toBeHex } from 'ethers';
 
-const CAVOS_TOKEN = process.env.CAVOS_TOKEN;
-const SECRET_TOKEN = process.env.SECRET_TOKEN;
+const supabase = createClient(
+    process.env.SUPABASE_URL || "",
+    process.env.SUPABASE_ANON_KEY || "",
+    {
+        auth: {
+            autoRefreshToken: true,
+            persistSession: true,
+            detectSessionInUrl: false,
+        },
+    });
 
 export async function POST(req: Request) {
     try {
@@ -17,17 +27,40 @@ export async function POST(req: Request) {
         }
 
         const token = authHeader.split(' ')[1];
-        if (token !== CAVOS_TOKEN) {
-            console.log(token, CAVOS_TOKEN);
+
+        const { data, error } = await supabase
+            .from('org')
+            .select('id, hash_secret')
+            .eq('secret', token);
+
+        const org = data?.[0];
+        if (!org || error) {
             return NextResponse.json(
-                { message: 'Unauthorized: Invalid Bearer token' },
+                { message: 'Unauthorized: Missing or invalid Bearer token' },
                 { status: 401 }
             );
         }
-        let { pin } = await req.json();
-        pin = decryptPin(pin, SECRET_TOKEN);
+
+        let { network } = await req.json();
+        if (!network) {
+            return NextResponse.json(
+                { message: 'Network is required' },
+                { status: 400 }
+            );
+        }
         const provider = new RpcProvider({ nodeUrl: process.env.RPC });
         try {
+
+            let calls: Call[] = [
+                {
+                    entrypoint: 'approve',
+                    contractAddress: '0x049d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7',
+                    calldata: ['0x0498E484Da80A8895c77DcaD5362aE483758050F22a92aF29A385459b0365BFE', '0xf', '0x0'],
+                },
+            ];
+
+            calls = formatCall(calls);
+
             const argentXaccountClassHash =
                 '0x1a736d6ed154502257f02b1ccdf4d9d1089f80811cd6acad48e6b6a9d1f2003';
 
@@ -40,13 +73,14 @@ export async function POST(req: Request) {
                 owner: axSigner,
                 guardian: axGuardian,
             });
-
             const AXcontractAddress = hash.calculateContractAddressFromHash(
                 starkKeyPubAX,
                 argentXaccountClassHash,
                 AXConstructorCallData,
                 0
             );
+
+            const account = new Account(provider, AXcontractAddress, privateKeyAX);
 
             const ArgentAAConstructorCallData = CallData.compile({
                 owner: starkKeyPubAX,
@@ -63,8 +97,6 @@ export async function POST(req: Request) {
                 })
             };
 
-            const account = new Account(provider, AXcontractAddress, privateKeyAX);
-
             const typeDataResponse = await fetch("https://starknet.api.avnu.fi/paymaster/v1/build-typed-data", {
                 method: "POST",
                 headers: {
@@ -79,12 +111,19 @@ export async function POST(req: Request) {
                 })
             });
 
+
             if (!typeDataResponse.ok) {
-                console.log("Error generating wallet:" + typeDataResponse.statusText);
-                return NextResponse.json({ data: typeDataResponse.statusText }, { status: 500 });
+                console.error('Error building typed data:', await typeDataResponse.text());
+                throw new Error('Failed to build typed data');
             }
 
-            const encryptedPK = encryptSecretWithPin(pin, privateKeyAX);
+            const typedData = await typeDataResponse.json();
+            let userSignature = (await account.signMessage(typedData));
+            if (Array.isArray(userSignature)) {
+                userSignature = userSignature.map((sig) => toBeHex(BigInt(sig)));
+            } else if (userSignature.r && userSignature.s) {
+                userSignature = [toBeHex(BigInt(userSignature.r)), toBeHex(BigInt(userSignature.s))];
+            }
 
             const executeResponse = await fetch('https://starknet.api.avnu.fi/paymaster/v1/deploy-account', {
                 method: "POST",
@@ -99,8 +138,28 @@ export async function POST(req: Request) {
             });
 
             if (!executeResponse.ok) {
-                console.log("Error generating wallet:" + executeResponse.statusText);
-                return NextResponse.json({ data: executeResponse.statusText }, { status: 500 });
+                const errorText = await executeResponse.text();
+                console.error('Error executing deployment:', errorText);
+                throw new Error('Failed to execute deployment');
+            }
+
+            const executeResult = await executeResponse.json();
+
+            const encryptedPK = encryptSecretWithPin(org.hash_secret, privateKeyAX);
+
+            const { error: txError } = await supabase
+                .from('external_wallet')
+                .insert([
+                    {
+                        org_id: org.id,
+                        public_key: starkKeyPubAX,
+                        private_key: encryptedPK,
+                        address: AXcontractAddress,
+                    },
+                ]);
+
+            if (txError) {
+                console.error('Error inserting data into Supabase:', txError);
             }
 
             return NextResponse.json({
