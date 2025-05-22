@@ -29,7 +29,7 @@ export async function POST(req: Request) {
         const provider = new RpcProvider({ nodeUrl: process.env.RPC });
         try {
             const argentXaccountClassHash =
-                '0x1a736d6ed154502257f02b1ccdf4d9d1089f80811cd6acad48e6b6a9d1f2003';
+                '0x01a736d6ed154502257f02b1ccdf4d9d1089f80811cd6acad48e6b6a9d1f2003';
 
             const privateKeyAX = stark.randomAddress();
             const starkKeyPubAX = ec.starkCurve.getStarkKey(privateKeyAX);
@@ -42,7 +42,7 @@ export async function POST(req: Request) {
             });
 
             const AXcontractAddress = hash.calculateContractAddressFromHash(
-                starkKeyPubAX,
+                argentXaccountClassHash,
                 argentXaccountClassHash,
                 AXConstructorCallData,
                 0
