@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { RpcProvider, Call, Account, TypedData, cairo } from 'starknet';
-import { decryptPin, decryptSecretWithPin, formatAmount, parseResponse } from '@/lib/utils';
+import { decryptPin, decryptSecretWithPin, formatAmount, parseResponse } from '@/app/lib/utils';
 import { toBeHex } from 'ethers';
 import axios from 'axios';
 

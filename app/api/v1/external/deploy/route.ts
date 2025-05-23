@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { RpcProvider, stark, ec, CairoCustomEnum, CairoOption, CallData, Account, num, hash, Call, CairoOptionVariant } from 'starknet';
 import { formatCall, type DeploymentData } from "@avnu/gasless-sdk";
-import { encryptSecretWithPin } from '@/lib/utils';
+import { encryptSecretWithPin } from '@/app/lib/utils';
 import { createClient } from '@supabase/supabase-js';
 import { toBeHex } from 'ethers';
 

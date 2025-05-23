@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { RpcProvider, Call, Account, TypedData, cairo } from 'starknet';
 import { formatCall } from "@avnu/gasless-sdk";
-import { decryptPin, decryptSecretWithPin, formatAmount, parseResponse } from '@/lib/utils';
+import { decryptPin, decryptSecretWithPin, formatAmount, parseResponse } from '@/app/lib/utils';
 import { toBeHex, toBigInt } from 'ethers';
 import axios from 'axios';
 

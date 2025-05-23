@@ -1,103 +1,319 @@
-import Image from "next/image";
+'use client';
+import { useRef, useState, useEffect } from 'react';
+import Image from 'next/image';
+import { motion } from 'framer-motion';
+import axios from 'axios';
+import Header from './components/Header';
+import Footer from './components/Footer';
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+  const [email, setEmail] = useState('');
+  const [name, setName] = useState('');
+  const [date, setDate] = useState('');
+  const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [walletCounts, setWalletCounts] = useState([
+    { "network": "sepolia", "count": 2 },
+    { "network": "mainnet", "count": 3 }
+  ]);
+  const demoRef = useRef<HTMLDivElement>(null);
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+  useEffect(() => {
+    // Fetch wallet counts from your API
+    const fetchWalletCounts = async () => {
+      try {
+        const response = await axios.get('/api/v1/external/wallets/count');
+        setWalletCounts(response.data.data);
+      } catch (error) {
+        console.error('Error fetching wallet counts:', error);
+      }
+    };
+
+    fetchWalletCounts();
+  }, []);
+
+  const scrollToDemo = () => {
+    demoRef.current?.scrollIntoView({
+      behavior: 'smooth',
+      block: 'start',
+    });
+  };
+
+  const handleSubmit = async (e: any) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      await axios.post(`/api/demo`, {
+        name,
+        email,
+        date
+      });
+      setSubmitted(true);
+    } catch (error) {
+      console.error('Error submitting form:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <>
+      <div className="min-h-screen p-4 md:p-10 lg:p-20 text-white bg-[#11110E]">
+        <main className="container mx-auto px-4 py-4 md:py-8">
+          <Header />
+
+          {/* Hero Section */}
+          <section className="relative overflow-hidden pt-20 md:pt-32">
+            <div className="flex flex-col lg:flex-row items-center gap-12">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.7, delay: 0.2 }}
+                className="flex-1"
+              >
+                <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl mb-6 md:mb-10 leading-tight font-bold">
+                  <span className="text-[#FFFFE3]">SMART WALLETS</span><br />
+                  FOR THE MODERN CRYPTO ERA
+                </h1>
+                <p className="text-lg md:text-xl mb-8 text-[#FFFFE3]/80 max-w-2xl">
+                  Secure, intuitive and packed with features. Experience crypto management like never before.
+                </p>
+                <div className="flex flex-col sm:flex-row gap-4">
+                  <button
+                    onClick={scrollToDemo}
+                    className="bg-[#FFFFE3] text-[#11110E] px-8 py-3 font-medium hover:bg-[#FFFFE3]/90 transition-colors duration-300 rounded-lg"
+                  >
+                    Book a Demo
+                  </button>
+                  <button className="border-2 border-[#FFFFE3] px-8 py-3 font-medium hover:bg-[#FFFFE3]/10 transition-colors duration-300 rounded-lg">
+                    Learn More
+                  </button>
+                </div>
+              </motion.div>
+
+              <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.6 }}
+                className="flex-1 flex justify-center"
+              >
+                <div className="relative w-full max-w-md aspect-[1.8/1] bg-gradient-to-br from-[#FFFFE3]/10 to-[#FFFFE3]/5 rounded-2xl overflow-hidden border border-[#FFFFE3]/20 shadow-lg">
+                  <div className="absolute inset-0 flex items-center justify-center p-8">
+                    <div className="relative w-full h-full">
+                      <Image
+                        src="/images/ArgentLogo.svg"
+                        alt="Wallet Preview"
+                        fill
+                        className="object-contain"
+                      />
+                    </div>
+                  </div>
+                  <div className="absolute top-6 left-6">
+                    <div className="flex items-center gap-2">
+                      <div className="w-3 h-3 rounded-full bg-red-500"></div>
+                      <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
+                      <div className="w-3 h-3 rounded-full bg-green-500"></div>
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            </div>
+          </section>
+
+          {/* Services Section */}
+          <section className="py-16 md:py-24">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.7 }}
+              className="text-center mb-16"
+            >
+              <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4">
+                OUR <span className="text-[#FFFFE3]">SERVICES</span>
+              </h2>
+              <p className="text-lg md:text-xl text-[#FFFFE3]/80 max-w-3xl mx-auto">
+                Explore our range of services tailored to meet the needs of both crypto enthusiasts and developers.
+              </p>
+            </motion.div>
+
+            <div className="space-y-12 max-w-4xl mx-auto">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5 }}
+                className="flex flex-col md:flex-row items-start gap-6"
+              >
+                <div className="text-4xl text-[#FFFFE3]">🔐</div>
+                <div>
+                  <h3 className="text-2xl font-bold text-[#FFFFE3] mb-2">Smart Wallets</h3>
+                  <p className="text-[#FFFFE3]/80">
+                    Deploy smart crypto account wallets with just one simple call. Enjoy the benefits of a non-custodial wallet with advanced security features and seamless user experience.
+                  </p>
+                </div>
+              </motion.div>
+
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.1 }}
+                className="flex flex-col md:flex-row items-start gap-6"
+              >
+                <div className="text-4xl text-[#FFFFE3]">🏄🏻‍♂️</div>
+                <div>
+                  <h3 className="text-2xl font-bold text-[#FFFFE3] mb-2">Onboarding</h3>
+                  <p className="text-[#FFFFE3]/80">
+                    Let your users onboard with ease. Our wallet service provides a seamless onboarding experience, allowing users to create and manage their wallets effortlessly.
+                  </p>
+                </div>
+              </motion.div>
+
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.2 }}
+                className="flex flex-col md:flex-row items-start gap-6"
+              >
+                <div className="text-4xl text-[#FFFFE3]">𐄳</div>
+                <div>
+                  <h3 className="text-2xl font-bold text-[#FFFFE3] mb-2">Network Support</h3>
+                  <p className="text-[#FFFFE3]/80">
+                    Deploy your wallets on any network, Sepolia or Mainnet. No matter your product stage or network of choice, we have you covered.
+                  </p>
+                </div>
+              </motion.div>
+            </div>
+          </section>
+
+          {/* Wallet Stats Section */}
+          <section className="py-16 md:py-24 bg-gradient-to-br from-[#FFFFE3]/5 to-[#FFFFE3]/10 rounded-3xl">
+            <div className="text-center mb-16">
+              <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4">
+                <span className="text-[#FFFFE3]">TRUSTED</span> BY EARLY ADOPTERS
+              </h2>
+              <p className="text-lg md:text-xl text-[#FFFFE3]/80 max-w-3xl mx-auto">
+                Join our growing community of crypto enthusiasts
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+              {walletCounts.map((stat, index) => (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: index * 0.1 }}
+                  className="bg-[#11110E] border border-[#FFFFE3]/20 rounded-xl p-8 text-center"
+                >
+                  <div className="text-5xl font-bold text-[#FFFFE3] mb-2">
+                    {stat.count.toLocaleString()}+
+                  </div>
+                  <h3 className="text-xl font-semibold mb-2">{stat.network} Wallets</h3>
+                  {/* <p className="text-[#FFFFE3]/70">{stat.description}</p> */}
+                </motion.div>
+              ))}
+            </div>
+          </section>
+
+          {/* Tech Stack Section */}
+          <section className="py-16 md:py-24">
+            <div className="text-center mb-16">
+              <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4">
+                BUILT WITH <span className="text-[#FFFFE3]">MODERN TECH</span>
+              </h2>
+              <p className="text-lg md:text-xl text-[#FFFFE3]/80 max-w-3xl mx-auto">
+                Leveraging cutting-edge technologies for maximum performance and security
+              </p>
+            </div>
+
+            <div className="flex flex-wrap justify-center gap-12 max-w-5xl mx-auto">
+              {[
+                { name: "Starknet", logo: "/images/starknet-logo.svg" },
+                { name: "Argent", logo: "/images/ArgentLogo.svg" },
+                { name: "AVNU", logo: "/images/AVNULogo.svg" },
+              ].map((tech, index) => (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: index * 0.1 }}
+                  whileHover={{ scale: 1.1 }}
+                  className="flex flex-col items-center justify-center"
+                >
+                  <div className="relative w-40 h-40 transition-all duration-300">
+                    <Image
+                      src={tech.logo}
+                      alt={tech.name}
+                      fill
+                      className="object-contain filter brightness-75 hover:brightness-100 transition-all duration-300"
+                    />
+                  </div>
+                  <p className="text-sm font-medium mt-2 text-[#FFFFE3]/80">{tech.name}</p>
+                </motion.div>
+              ))}
+            </div>
+          </section>
+
+          {/* Demo Booking Section */}
+          <section
+            ref={demoRef}
+            className="py-16 md:py-24 border-t border-[#FFFFE3]/10"
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+            <div className="flex flex-col lg:flex-row gap-12 items-center">
+              <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.7 }}
+                className="flex-1"
+              >
+                <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6">
+                  READY TO <span className="text-[#FFFFE3]">GET STARTED?</span>
+                </h2>
+                <p className="text-lg md:text-xl text-[#FFFFE3]/80 mb-8 max-w-xl">
+                  Schedule a personalized demo and discover how our wallet can transform your crypto experience.
+                </p>
+                <div className="space-y-4">
+                  {[
+                    "✓ Non-custodial security",
+                    "✓ One-click DeFi access",
+                    "✓ Multi-chain support",
+                    "✓ 24/7 customer support",
+                  ].map((feature, index) => (
+                    <div key={index} className="flex items-center gap-3">
+                      <div className="text-[#FFFFE3]">{feature.split('✓')[0]}</div>
+                      <p>{feature.split('✓')[1]}</p>
+                    </div>
+                  ))}
+                </div>
+              </motion.div>
+
+              <motion.div
+                initial={{ opacity: 0, x: 20 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.7 }}
+                className="flex-1 w-full max-w-md"
+              >
+                <div className="bg-[#FFFFE3]/5 border border-[#FFFFE3]/10 rounded-2xl p-8 text-center">
+                  <h3 className="text-2xl font-bold mb-6 text-[#FFFFE3]">
+                    Book a Demo
+                  </h3>
+                  <p className="text-lg text-[#FFFFE3]/80 mb-6">
+                    Click the button below to schedule your demo at your convenience.
+                  </p>
+                  <a
+                    href="https://cal.com/adrian-vrj/30min"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-block bg-[#FFFFE3] text-[#11110E] px-8 py-3 font-medium hover:bg-[#FFFFE3]/90 transition-colors duration-300 rounded-lg"
+                  >
+                    Schedule Demo
+                  </a>
+                </div>
+              </motion.div>
+            </div>
+          </section>
+        </main>
+      </div>
+      <Footer />
+    </>
   );
 }
