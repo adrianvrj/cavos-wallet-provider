@@ -90,7 +90,7 @@ export async function POST(req: Request) {
                 method: "POST",
                 headers: {
                     'Content-Type': 'application/json',
-                    'x-api-key': process.env.AVNU_API_KEY || "",
+                    'api-key': process.env.AVNU_API_KEY || "",
                     'ask-signature': "true",
                 },
                 body: JSON.stringify({
