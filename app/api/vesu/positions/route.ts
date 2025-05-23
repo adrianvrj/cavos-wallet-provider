@@ -38,11 +38,11 @@ export async function POST(req: Request) {
 
     // --- USER POSITIONS ---
     const userPositions = (
-      await axios.get(`https://api.vesu.xyz/positions?walletAddress=${address}`)
+      await axios.get(`https://api.vesu.xyz/positions?walletAddress=${address}&type=earn`)
     ).data.data;
     const positions = userPositions.filter(
       (item: { type: string; pool: { name: string } }) =>
-        item.type === "earn" && item.pool.name === pool
+        item.pool.name === pool
     );
     if (!positions || positions.length === 0) {
       return NextResponse.json(
@@ -53,22 +53,17 @@ export async function POST(req: Request) {
       );
     }
 
-    // --- VESU POOLS ---
-    const allVesuPools = (await axios.get("https://api.vesu.xyz/pools")).data
-      .data;
-    const verifiedAllVesuPools = allVesuPools
-      .filter((pool: VesuPool) => pool.isVerified)
-      .map(formatVesuPool);
+    const tokenPrice =
+      Number(BigInt(positions[0].collateral.usdPrice.value)) /
+      10 ** positions[0].collateral.usdPrice.decimals;
 
-    // -- EARN POSITIONS
-    const earnPositions = await Promise.all(
-      positions.map((position: VesuPosition) =>
-        mapPositionToEarn(position, verifiedAllVesuPools)
-      )
-    );
-
-    if (earnPositions) {
-      return NextResponse.json({ earnPositions });
+    if (positions && positions.length > 0) {
+      return NextResponse.json({
+        poolid: positions[0].pool.id,
+        total_supplied:
+          (Number(positions[0].collateral.value) / 10 ** positions[0].collateral.decimals) *
+            tokenPrice,
+      });
     }
     return NextResponse.json({});
   } catch (error: any) {
@@ -79,35 +74,3 @@ export async function POST(req: Request) {
     );
   }
 }
-
-const mapPositionToEarn = (
-  position: VesuPosition,
-  pools: VesuPool[]
-): VesuEarnPosition => {
-  const poolData = pools.find(
-    (pool: { id: string }) => pool.id === position.pool.id
-  );
-  let poolApy = 0;
-
-  const tokenPrice =
-    Number(BigInt(position.collateral.usdPrice.value)) /
-    10 ** position.collateral.usdPrice.decimals;
-
-  if (poolData) {
-    const asset = poolData.assets.find(
-      (a: { symbol: string }) => a.symbol === position.collateral.symbol
-    );
-    if (asset) {
-      poolApy = asset.apy + asset.defiSpringApy;
-    }
-  }
-
-  return {
-    poolId: position.pool.id,
-    pool: position.pool.name,
-    total_supplied:
-      (Number(position.collateral.value) / 10 ** position.collateral.decimals) *
-      tokenPrice,
-    poolApy,
-  };
-};

@@ -60,15 +60,12 @@ export async function POST(req: Request) {
                 method: "POST",
                 headers: {
                     'Content-Type': 'application/json',
-                    'x-api-key': process.env.AVNU_API_KEY || "",
+                    'api-key': process.env.AVNU_API_KEY || "",
                     'ask-signature': "false",
                 },
                 body: JSON.stringify({
                     "userAddress": address,
                     "calls": calls,
-                    "gasTokenAddress": "0x53c91253bc9682c04929ca02ed00b3e423f6710d2ee7e0d5ebb06f3ecf368a8",
-                    "maxGasTokenAmount": toBeHex(BigInt(1000000)),
-                    "accountClassHash": null
                 }),
             });
 
@@ -90,7 +87,7 @@ export async function POST(req: Request) {
                 method: "POST",
                 headers: {
                     'Content-Type': 'application/json',
-                    'x-api-key': process.env.AVNU_API_KEY || "",
+                    'api-key': process.env.AVNU_API_KEY || "",
                     'ask-signature': "true",
                 },
                 body: JSON.stringify({
