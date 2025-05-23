@@ -35,11 +35,11 @@ export async function POST(req: Request) {
 
     // --- USER POSITIONS ---
     const userPositions = (
-      await axios.get(`https://api.vesu.xyz/positions?walletAddress=${address}`)
+      await axios.get(`https://api.vesu.xyz/positions?walletAddress=${address}&type=earn`)
     ).data.data;
     const positions = userPositions.filter(
       (item: { type: string; pool: { name: string } }) =>
-        item.type === "earn" && item.pool.name === pool
+        item.pool.name === pool
     );
     if (!positions || positions.length === 0) {
       return NextResponse.json({
@@ -53,6 +53,7 @@ export async function POST(req: Request) {
         poolid: positions[0].pool.id,
         total_supplied:
           (Number(positions[0].collateral.value) / 10 ** positions[0].collateral.decimals)
+
       });
     }
     return NextResponse.json({});

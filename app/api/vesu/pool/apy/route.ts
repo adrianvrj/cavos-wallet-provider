@@ -73,7 +73,7 @@ export async function POST(req: Request) {
     const poolAPY = apy + defiSpringApy;
 
     if (poolAPY) {
-      return NextResponse.json({ poolAPY });
+      return NextResponse.json({ poolAPY: poolAPY });
     }
     return NextResponse.json({ poolAPY: 0 });
   } catch (error: any) {
