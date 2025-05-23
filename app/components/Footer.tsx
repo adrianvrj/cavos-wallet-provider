@@ -61,7 +61,7 @@ export default function Footer() {
 					<ul className="space-y-2">
 						<li>
 							<a
-								href="https://x.com/ethersight"
+								href="https://x.com/cavosxyz"
 								target="_blank"
 								rel="noopener noreferrer"
 								className="hover:text-gray-300 transition-colors"
@@ -71,7 +71,7 @@ export default function Footer() {
 						</li>
 						<li>
 							<a
-								href="https://github.com/ethersight"
+								href="https://github.com/adrianvrj/cavos-wallet-provider"
 								target="_blank"
 								rel="noopener noreferrer"
 								className="hover:text-gray-300 transition-colors"
@@ -81,7 +81,7 @@ export default function Footer() {
 						</li>
 						<li>
 							<a
-								href="https://discord.gg/ethersight"
+								href="https://discord.com/invite/RKNxhpczfw"
 								target="_blank"
 								rel="noopener noreferrer"
 								className="hover:text-gray-300 transition-colors"
