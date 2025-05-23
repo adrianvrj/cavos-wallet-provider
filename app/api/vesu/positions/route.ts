@@ -1,9 +1,6 @@
 import { NextResponse } from "next/server";
 import axios from "axios";
 
-import { formatVesuPool } from "@/lib/utils";
-import { VesuEarnPosition, VesuPool, VesuPosition } from "@/types/vesu";
-
 const CAVOS_TOKEN = process.env.CAVOS_TOKEN;
 
 export async function POST(req: Request) {
@@ -45,24 +42,18 @@ export async function POST(req: Request) {
         item.pool.name === pool
     );
     if (!positions || positions.length === 0) {
-      return NextResponse.json(
-        {
-          message: "No positions found for the specified pool.",
-        },
-        { status: 404 }
-      );
+      return NextResponse.json({
+        poolid: 0,
+        total_supplied: 0,
+      });
     }
-
-    const tokenPrice =
-      Number(BigInt(positions[0].collateral.usdPrice.value)) /
-      10 ** positions[0].collateral.usdPrice.decimals;
 
     if (positions && positions.length > 0) {
       return NextResponse.json({
         poolid: positions[0].pool.id,
         total_supplied:
-          (Number(positions[0].collateral.value) / 10 ** positions[0].collateral.decimals) *
-            tokenPrice,
+          (Number(positions[0].collateral.value) / 10 ** positions[0].collateral.decimals)
+
       });
     }
     return NextResponse.json({});
