@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { RpcProvider, Call, Account, wallet, WalletAccount, CairoCustomEnum, CairoOption, CallData, num, TypedData, cairo } from 'starknet';
 import { formatCall, type DeploymentData } from "@avnu/gasless-sdk";
-import { decryptPin, decryptSecretWithPin, encryptSecretWithPin, formatAmount, parseResponse } from '@/lib/utils';
+import { decryptPin, decryptSecretWithPin, encryptSecretWithPin, formatAmount, parseResponse } from '@/app/lib/utils';
 import { toBeHex } from 'ethers';
 
 const CAVOS_TOKEN = process.env.CAVOS_TOKEN;

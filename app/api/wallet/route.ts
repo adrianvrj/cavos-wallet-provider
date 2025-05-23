@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { RpcProvider, stark, ec, CairoCustomEnum, CairoOption, CallData, Account, num, hash } from 'starknet';
 import type { DeploymentData } from "@avnu/gasless-sdk";
-import { decryptPin, encryptSecretWithPin } from '@/lib/utils';
+import { decryptPin, encryptSecretWithPin } from '@/app/lib/utils';
 
 const CAVOS_TOKEN = process.env.CAVOS_TOKEN;
 const SECRET_TOKEN = process.env.SECRET_TOKEN;

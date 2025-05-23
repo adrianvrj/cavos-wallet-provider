@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import axios from "axios";
-import { formatVesuPool } from "@/lib/utils";
+import { formatVesuPool } from "@/app/lib/utils";
 import { VesuPool } from "@/types/vesu";
 
 const CAVOS_TOKEN = process.env.CAVOS_TOKEN;
