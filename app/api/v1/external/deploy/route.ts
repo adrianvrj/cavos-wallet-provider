@@ -123,7 +123,6 @@ export async function POST(req: Request) {
                 throw new Error('Failed to execute deployment');
             }
             const executeResult = await executeResponse.json();
-            console.log('Execute result:', executeResult);
             const encryptedPK = encryptSecretWithPin(org.hash_secret, privateKeyAX);
             const { error: txError } = await supabase
                 .from('external_wallet')

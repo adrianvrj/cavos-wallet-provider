@@ -79,7 +79,6 @@ export async function POST(req: Request) {
                 console.error('Error building typed data:', await typeDataResponse.text());
                 throw new Error('Failed to build typed data');
             }
-            console.log("Decrypted", decryptSecretWithPin(hashedPk, org.hash_secret));
             const account = new Account(
                 provider,
                 address,
