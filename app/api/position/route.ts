@@ -1,127 +1,137 @@
-import { NextResponse } from 'next/server';
-import { RpcProvider, Call, Account, wallet, WalletAccount, CairoCustomEnum, CairoOption, CallData, num, TypedData, cairo } from 'starknet';
-import { formatCall, type DeploymentData } from "@avnu/gasless-sdk";
-import { decryptPin, decryptSecretWithPin, encryptSecretWithPin, formatAmount, parseResponse } from '@/app/lib/utils';
-import { toBeHex } from 'ethers';
-
-const CAVOS_TOKEN = process.env.CAVOS_TOKEN;
-const SECRET_TOKEN = process.env.SECRET_TOKEN;
+import { NextResponse } from "next/server";
+import { RpcProvider, Account, Call, TypedData } from "starknet";
+import { formatCall } from "@avnu/gasless-sdk";
+import {
+  decryptPin,
+  decryptSecretWithPin,
+  formatAmount,
+  parseResponse,
+} from "@/app/lib/utils";
+import { toBeHex } from "ethers";
+import { validateRequest, withCORS } from "@/app/lib/authUtils";
 
 export async function POST(req: Request) {
-    try {
-        const authHeader = req.headers.get('Authorization');
-        if (!authHeader || !authHeader.startsWith('Bearer ')) {
-            return NextResponse.json(
-                { message: 'Unauthorized: Missing or invalid Bearer token' },
-                { status: 401 }
-            );
-        }
+  const auth = validateRequest(req);
+  if (!auth.valid) return auth.response;
 
-        const token = authHeader.split(' ')[1];
-        if (token !== CAVOS_TOKEN) {
-            return NextResponse.json(
-                { message: 'Unauthorized: Invalid Bearer token' },
-                { status: 401 }
-            );
-        }
-        let { amount, address, hashedPk, hashedPin } = await req.json();
-        let pin = decryptPin(hashedPin, SECRET_TOKEN);
-        let pk = decryptSecretWithPin(hashedPk, pin);
-        const provider = new RpcProvider({ nodeUrl: process.env.RPC });
-        try {
-            const account = new Account(
-                provider,
-                address,
-                pk
-            );
-
-            let calls: Call[] = [
-                {
-                    contractAddress: "0x053c91253bc9682c04929ca02ed00b3e423f6710d2ee7e0d5ebb06f3ecf368a8",
-                    entrypoint: 'approve',
-                    calldata: [
-                        "0x028795e04b2abaf61266faa81cc02d4d1a6ef8574fef383cdf6185ca580648aa",
-                        formatAmount(amount, 6)
-                    ],
-                },
-                {
-                    contractAddress: "0x028795e04b2abaf61266faa81cc02d4d1a6ef8574fef383cdf6185ca580648aa",
-                    entrypoint: "deposit",
-                    calldata: [
-                        formatAmount(amount, 6),
-                        address,
-                    ],
-                },
-            ];
-
-            calls = formatCall(calls);
-
-            const typeDataResponse = await fetch("https://starknet.api.avnu.fi/paymaster/v1/build-typed-data", {
-                method: "POST",
-                headers: {
-                    'Content-Type': 'application/json',
-                    'api-key': process.env.AVNU_API_KEY || "",
-                    'ask-signature': "false",
-                },
-                body: JSON.stringify({
-                    "userAddress": address,
-                    "calls": calls,
-                }),
-            });
-
-            if (!typeDataResponse.ok) {
-                const errorText = await typeDataResponse.text();
-                throw new Error(`API error typedata: ${errorText}`);
-            }
-
-            let typeData: TypedData = await parseResponse(typeDataResponse);
-            // Sign the message
-            let userSignature = (await account.signMessage(typeData));
-            if (Array.isArray(userSignature)) {
-                userSignature = userSignature.map((sig) => toBeHex(BigInt(sig)));
-            } else if (userSignature.r && userSignature.s) {
-                userSignature = [toBeHex(BigInt(userSignature.r)), toBeHex(BigInt(userSignature.s))];
-            }
-
-            const executeTransaction = await fetch("https://starknet.api.avnu.fi/paymaster/v1/execute", {
-                method: "POST",
-                headers: {
-                    'Content-Type': 'application/json',
-                    'api-key': process.env.AVNU_API_KEY || "",
-                    'ask-signature': "true",
-                },
-                body: JSON.stringify({
-                    "userAddress": address,
-                    "typedData": JSON.stringify(typeData),
-                    "signature": userSignature,
-                    "deploymentData": null,
-                },),
-            });
-
-            if (!executeTransaction.ok) {
-                const errorText = await executeTransaction.text();
-                throw new Error(`Error en la API de ejecución:` + errorText);
-            }
-
-            const result = await executeTransaction.json();
-            // console.log('Resultado de la transacción:', result);
-
-            if (!result.transactionHash) {
-                throw new Error('La respuesta no contiene el hash de la transacción');
-            }
-
-            return NextResponse.json({
-                result: result.transactionHash,
-            });
-        } catch (error) {
-            console.log("Error creating position: " + error);
-            return NextResponse.json({ data: error }, { status: 500 });
-        }
-    } catch (error: any) {
-        console.log(error);
-        return NextResponse.json(
-            { message: error.message || 'Internal Server Error' },
-            { status: 500 }
-        );
+  try {
+    const { amount, address, hashedPk, hashedPin } = await req.json();
+    if (!amount || !address || !hashedPk || !hashedPin) {
+      return withCORS(
+        NextResponse.json(
+          {
+            message:
+              "Missing required parameters: amount, address, hashedPk, hashedPin",
+          },
+          { status: 400 }
+        )
+      );
     }
+
+    const pin = decryptPin(hashedPin, process.env.SECRET_TOKEN);
+    const pk = decryptSecretWithPin(hashedPk, pin);
+
+    const provider = new RpcProvider({ nodeUrl: process.env.RPC });
+    const account = new Account(provider, address, pk);
+
+    let calls: Call[] = [
+      {
+        contractAddress:
+          "0x053c91253bc9682c04929ca02ed00b3e423f6710d2ee7e0d5ebb06f3ecf368a8", // USDC contract
+        entrypoint: "approve",
+        calldata: [
+          "0x028795e04b2abaf61266faa81cc02d4d1a6ef8574fef383cdf6185ca580648aa", // target contract
+          formatAmount(amount, 6),
+        ],
+      },
+      {
+        contractAddress:
+          "0x028795e04b2abaf61266faa81cc02d4d1a6ef8574fef383cdf6185ca580648aa", // target contract
+        entrypoint: "deposit",
+        calldata: [formatAmount(amount, 6), address],
+      },
+    ];
+
+    calls = formatCall(calls);
+
+    const typedDataResponse = await fetch(
+      "https://starknet.api.avnu.fi/paymaster/v1/build-typed-data",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "api-key": process.env.AVNU_API_KEY || "",
+          "ask-signature": "false",
+        },
+        body: JSON.stringify({
+          userAddress: address,
+          calls,
+        }),
+      }
+    );
+
+    if (!typedDataResponse.ok) {
+      const errorText = await typedDataResponse.text();
+      throw new Error(`API error building typed data: ${errorText}`);
+    }
+
+    const typedData: TypedData = await parseResponse(typedDataResponse);
+
+    let userSignature = await account.signMessage(typedData);
+    if (Array.isArray(userSignature)) {
+      userSignature = userSignature.map((sig) => toBeHex(BigInt(sig)));
+    } else if (userSignature.r && userSignature.s) {
+      userSignature = [
+        toBeHex(BigInt(userSignature.r)),
+        toBeHex(BigInt(userSignature.s)),
+      ];
+    }
+
+    const executeResponse = await fetch(
+      "https://starknet.api.avnu.fi/paymaster/v1/execute",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "api-key": process.env.AVNU_API_KEY || "",
+          "ask-signature": "true",
+        },
+        body: JSON.stringify({
+          userAddress: address,
+          typedData: JSON.stringify(typedData),
+          signature: userSignature,
+          deploymentData: null,
+        }),
+      }
+    );
+
+    if (!executeResponse.ok) {
+      const errorText = await executeResponse.text();
+      throw new Error(`API error executing transaction: ${errorText}`);
+    }
+
+    const result = await executeResponse.json();
+
+    if (!result.transactionHash) {
+      throw new Error("Transaction hash missing in response");
+    }
+
+    return withCORS(
+      NextResponse.json({
+        result: result.transactionHash,
+      })
+    );
+  } catch (error: any) {
+    console.error("Error processing transaction:", error);
+    return withCORS(
+      NextResponse.json(
+        { message: error.message || "Internal Server Error" },
+        { status: 500 }
+      )
+    );
+  }
+}
+
+export async function OPTIONS(req: Request) {
+  return withCORS(new NextResponse(null, { status: 204 }));
 }
