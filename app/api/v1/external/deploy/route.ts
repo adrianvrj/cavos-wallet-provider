@@ -64,12 +64,13 @@ export async function POST(req: Request) {
 
         try {
             const argentXaccountClassHash =
-                "0x01a736d6ed154502257f02b1ccdf4d9d1089f80811cd6acad48e6b6a9d1f2003";
+                "0x036078334509b514626504edc9fb252328d1a240e4e948bef8d0c08dff45927f";
             const privateKeyAX = stark.randomAddress();
             const starkKeyPubAX = ec.starkCurve.getStarkKey(privateKeyAX);
-            const axGuardian = new CairoOption<unknown>(CairoOptionVariant.None);
+            const axSigner = new CairoCustomEnum({ Starknet: { pubkey: starkKeyPubAX } });
+            const axGuardian = new CairoOption(1);
             const ArgentAAConstructorCallData = CallData.compile({
-                owner: starkKeyPubAX,
+                owner: axSigner,
                 guardian: axGuardian,
             });
             const AXcontractAddress = hash.calculateContractAddressFromHash(
