@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { RpcProvider, stark, ec, CairoCustomEnum, CairoOption, CallData, Account, num, hash, Call, CairoOptionVariant } from 'starknet';
 import { formatCall, type DeploymentData } from "@avnu/gasless-sdk";
-import { encryptSecretWithPin } from '@/app/lib/utils';
+import { decryptSecretWithPin, encryptSecretWithPin } from '@/app/lib/utils';
 import { createClient } from '@supabase/supabase-js';
 import { toBeHex } from 'ethers';
 
@@ -15,8 +15,6 @@ const supabase = createClient(
             detectSessionInUrl: false,
         },
     });
-
-const ARGENT_ACCOUNT_CLASS_HASH = "0x1a736d6ed154502257f02b1ccdf4d9d1089f80811cd6acad48e6b6a9d1f2003";
 
 export async function POST(req: Request) {
     try {
@@ -43,7 +41,8 @@ export async function POST(req: Request) {
             );
         }
 
-        let { network } = await req.json();
+
+        let { network, calls, address, hashedPk } = await req.json();
         if (!network) {
             return NextResponse.json(
                 { message: 'Network is required' },
@@ -63,32 +62,8 @@ export async function POST(req: Request) {
         const avnuPaymasterUrl = network === 'sepolia' ? 'https://sepolia.api.avnu.fi' : 'https://starknet.api.avnu.fi'
 
         try {
-            const argentXaccountClassHash =
-                "0x036078334509b514626504edc9fb252328d1a240e4e948bef8d0c08dff45927f";
-            const privateKeyAX = stark.randomAddress();
-            const starkKeyPubAX = ec.starkCurve.getStarkKey(privateKeyAX);
-            const axSigner = new CairoCustomEnum({ Starknet: { pubkey: starkKeyPubAX } });
-            const axGuardian = new CairoOption(1);
-            const ArgentAAConstructorCallData = CallData.compile({
-                owner: axSigner,
-                guardian: axGuardian,
-            });
-            const AXcontractAddress = hash.calculateContractAddressFromHash(
-                argentXaccountClassHash,
-                argentXaccountClassHash,
-                ArgentAAConstructorCallData,
-                0
-            );
-            console.log("AXcontractAddress", AXcontractAddress);
-            const deploymentData = {
-                class_hash: argentXaccountClassHash,
-                salt: argentXaccountClassHash,
-                unique: "0x0",
-                calldata: ArgentAAConstructorCallData.map(x => {
-                    const hex = BigInt(x).toString(16);
-                    return `0x${hex}`;
-                })
-            };
+            const cavosCalls = formatCall(calls);
+
             const typeDataResponse = await fetch(`${avnuPaymasterUrl}/paymaster/v1/build-typed-data`, {
                 method: "POST",
                 headers: {
@@ -96,25 +71,37 @@ export async function POST(req: Request) {
                     'api-key': process.env.AVNU_API_KEY || "",
                 },
                 body: JSON.stringify({
-                    userAddress: AXcontractAddress,
-                    accountClassHash: argentXaccountClassHash,
-                    deploymentData,
-                    calls: [],
+                    "userAddress": address,
+                    "calls": cavosCalls,
                 })
             });
             if (!typeDataResponse.ok) {
                 console.error('Error building typed data:', await typeDataResponse.text());
                 throw new Error('Failed to build typed data');
             }
-            const executeResponse = await fetch(`${avnuPaymasterUrl}/paymaster/v1/deploy-account`, {
+            const account = new Account(
+                provider,
+                address,
+                decryptSecretWithPin(hashedPk, org.hash_secret)
+            );
+            const typeData = await typeDataResponse.json();
+            let userSignature = (await account.signMessage(typeData));
+            if (Array.isArray(userSignature)) {
+                userSignature = userSignature.map((sig) => toBeHex(BigInt(sig)));
+            } else if (userSignature.r && userSignature.s) {
+                userSignature = [toBeHex(BigInt(userSignature.r)), toBeHex(BigInt(userSignature.s))];
+            }
+            const executeResponse = await fetch(`${avnuPaymasterUrl}/paymaster/v1/execute`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                     "api-key": process.env.AVNU_API_KEY || "",
                 },
                 body: JSON.stringify({
-                    "userAddress": AXcontractAddress,
-                    "deploymentData": deploymentData,
+                    "userAddress": address,
+                    "typedData": JSON.stringify(typeData),
+                    "signature": userSignature,
+                    "deploymentData": null,
                 })
             });
             if (!executeResponse.ok) {
@@ -123,27 +110,8 @@ export async function POST(req: Request) {
                 throw new Error('Failed to execute deployment');
             }
             const executeResult = await executeResponse.json();
-            const encryptedPK = encryptSecretWithPin(org.hash_secret, privateKeyAX);
-            const { error: txError } = await supabase
-                .from('external_wallet')
-                .insert([
-                    {
-                        org_id: org.id,
-                        public_key: starkKeyPubAX,
-                        private_key: encryptedPK,
-                        address: AXcontractAddress,
-                        network: network,
-                    },
-                ]);
-
-            if (txError) {
-                console.error('Error inserting data into Supabase:', txError);
-            }
-
             return NextResponse.json({
-                public_key: starkKeyPubAX,
-                private_key: encryptedPK,
-                address: AXcontractAddress
+                result: executeResult,
             });
         } catch (error) {
             console.log("Error generating wallet:" + error);

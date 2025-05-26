@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server';
-import { RpcProvider, stark, ec, CairoCustomEnum, CairoOption, CallData, Account, num, hash } from 'starknet';
-import type { DeploymentData } from "@avnu/gasless-sdk";
+import { RpcProvider, stark, ec, CairoCustomEnum, CairoOption, CallData, Account, hash } from 'starknet';
 import { decryptPin, encryptSecretWithPin } from '@/app/lib/utils';
 
 const CAVOS_TOKEN = process.env.CAVOS_TOKEN;
@@ -29,40 +28,31 @@ export async function POST(req: Request) {
         const provider = new RpcProvider({ nodeUrl: process.env.RPC });
         try {
             const argentXaccountClassHash =
-                '0x01a736d6ed154502257f02b1ccdf4d9d1089f80811cd6acad48e6b6a9d1f2003';
-
+                "0x036078334509b514626504edc9fb252328d1a240e4e948bef8d0c08dff45927f";
             const privateKeyAX = stark.randomAddress();
             const starkKeyPubAX = ec.starkCurve.getStarkKey(privateKeyAX);
-
             const axSigner = new CairoCustomEnum({ Starknet: { pubkey: starkKeyPubAX } });
             const axGuardian = new CairoOption(1);
-            const AXConstructorCallData = CallData.compile({
+            const ArgentAAConstructorCallData = CallData.compile({
                 owner: axSigner,
                 guardian: axGuardian,
             });
-
             const AXcontractAddress = hash.calculateContractAddressFromHash(
                 argentXaccountClassHash,
                 argentXaccountClassHash,
-                AXConstructorCallData,
+                ArgentAAConstructorCallData,
                 0
             );
-
-            const ArgentAAConstructorCallData = CallData.compile({
-                owner: starkKeyPubAX,
-                guardian: axGuardian,
-            });
-
-            const deploymentData: DeploymentData = {
+            console.log("AXcontractAddress", AXcontractAddress);
+            const deploymentData = {
                 class_hash: argentXaccountClassHash,
-                salt: starkKeyPubAX,
-                unique: `${num.toHex(1)}`,
+                salt: argentXaccountClassHash,
+                unique: "0x0",
                 calldata: ArgentAAConstructorCallData.map(x => {
                     const hex = BigInt(x).toString(16);
                     return `0x${hex}`;
                 })
             };
-
             const account = new Account(provider, AXcontractAddress, privateKeyAX);
 
             const typeDataResponse = await fetch("https://starknet.api.avnu.fi/paymaster/v1/build-typed-data", {
