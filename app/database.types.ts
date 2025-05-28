@@ -11,22 +11,28 @@ export type Database = {
     Tables: {
       external_wallet: {
         Row: {
+          address: string
           created_at: string
           id: number
+          network: string
           org_id: number
           private_key: string
           public_key: string
         }
         Insert: {
+          address: string
           created_at?: string
           id?: number
+          network: string
           org_id: number
           private_key: string
           public_key: string
         }
         Update: {
+          address?: string
           created_at?: string
           id?: number
+          network?: string
           org_id?: number
           private_key?: string
           public_key?: string
@@ -48,6 +54,7 @@ export type Database = {
           hash_secret: string
           id: number
           name: string
+          plan_id: string | null
           secret: string
         }
         Insert: {
@@ -56,6 +63,7 @@ export type Database = {
           hash_secret: string
           id?: number
           name: string
+          plan_id?: string | null
           secret: string
         }
         Update: {
@@ -64,6 +72,7 @@ export type Database = {
           hash_secret?: string
           id?: number
           name?: string
+          plan_id?: string | null
           secret?: string
         }
         Relationships: []
