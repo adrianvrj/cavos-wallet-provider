@@ -9,12 +9,20 @@ export async function POST(req: Request) {
   if (!auth.valid) return auth.response;
 
   try {
-    const { poolName } = await req.json();
+    const { poolName, assetSymbol } = await req.json();
 
     if (!poolName) {
       return withCORS(
         NextResponse.json(
           { message: "Missing required parameter: 'poolName'" },
+          { status: 400 }
+        )
+      );
+    }
+    if (!assetSymbol) {
+      return withCORS(
+        NextResponse.json(
+          { message: "Missing required parameter: 'assetSymbol'" },
           { status: 400 }
         )
       );
@@ -39,7 +47,7 @@ export async function POST(req: Request) {
       );
     }
 
-    const usdcAsset = foundPool.assets.find((asset) => asset.symbol === "USDC");
+    const usdcAsset = foundPool.assets.find((asset) => asset.symbol === assetSymbol);
 
     if (!usdcAsset) {
       return withCORS(
