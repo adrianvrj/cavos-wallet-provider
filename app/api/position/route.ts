@@ -30,7 +30,6 @@ export async function POST(req: Request) {
 
     const pin = decryptPin(hashedPin, process.env.SECRET_TOKEN);
     const pk = decryptSecretWithPin(hashedPk, pin);
-    console.log(pk);
 
     const provider = new RpcProvider({ nodeUrl: process.env.RPC });
     const account = new Account(provider, address, pk);
