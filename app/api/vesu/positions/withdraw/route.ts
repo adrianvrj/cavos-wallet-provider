@@ -46,7 +46,7 @@ export async function POST(req: Request) {
 
             let calls: Call[] = [
                 {
-                    contractAddress: "0x028795e04b2abaf61266faa81cc02d4d1a6ef8574fef383cdf6185ca580648aa",
+                    contractAddress: "0x079824ac0f81aa0e4483628c3365c09fa74d86650fadccb2a733284d3a0a8b85",
                     entrypoint: 'redeem',
                     calldata: [
                         positions.collateralShares.value,

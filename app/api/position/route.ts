@@ -40,13 +40,13 @@ export async function POST(req: Request) {
           "0x053c91253bc9682c04929ca02ed00b3e423f6710d2ee7e0d5ebb06f3ecf368a8", // USDC contract
         entrypoint: "approve",
         calldata: [
-          "0x028795e04b2abaf61266faa81cc02d4d1a6ef8574fef383cdf6185ca580648aa", // target contract
+          "0x079824ac0f81aa0e4483628c3365c09fa74d86650fadccb2a733284d3a0a8b85", // target contract
           formatAmount(amount, 6),
         ],
       },
       {
         contractAddress:
-          "0x028795e04b2abaf61266faa81cc02d4d1a6ef8574fef383cdf6185ca580648aa", // target contract
+          "0x079824ac0f81aa0e4483628c3365c09fa74d86650fadccb2a733284d3a0a8b85", // target contract
         entrypoint: "deposit",
         calldata: [formatAmount(amount, 6), address],
       },

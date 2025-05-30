@@ -40,12 +40,12 @@ export async function POST(req: Request) {
                     contractAddress: "0x3Fe2b97C1Fd336E750087D68B9b867997Fd64a2661fF3ca5A7C771641e8e7AC",
                     entrypoint: 'approve',
                     calldata: [
-                        "0x06b0ef784eb49c85f4d9447f30d7f7212be65ce1e553c18d516c87131e81dbd6",
+                        "0x00c452bacd439bab4e39aeea190b4ff81f44b019d4b3a25fa4da04a1cae7b6ff",
                         formatAmount(amount, 8)
                     ],
                 },
                 {
-                    contractAddress: "0x06b0ef784eb49c85f4d9447f30d7f7212be65ce1e553c18d516c87131e81dbd6",
+                    contractAddress: "0x00c452bacd439bab4e39aeea190b4ff81f44b019d4b3a25fa4da04a1cae7b6ff",
                     entrypoint: "deposit",
                     calldata: [
                         formatAmount(amount, 8),
