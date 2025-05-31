@@ -89,7 +89,7 @@ export default function DocsPage() {
                         🔧 Developer Friendly
                       </h4>
                       <p className="text-[#FFFFE3]/60">
-                        Comprehensive APIs, SDKs, and guides to integrate wallet
+                        Comprehensive APIs, and guides to integrate wallet
                         features effortlessly into your dApps or platforms.
                       </p>
                     </div>
