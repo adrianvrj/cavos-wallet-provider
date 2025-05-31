@@ -1,19 +1,17 @@
 "use client";
-
-import { useEffect, useState } from "react";
-import { useAtom } from "jotai";
-import { userAtom } from "../lib/atoms/user";
+import { useState } from "react";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
+import CurlSnippet from "../components/curlSnippet";
 
 export default function DocsPage() {
   const [activeSection, setActiveSection] = useState("what-is");
-
   const sections = [
     { id: "what-is", title: "What is Cavos Wallet Service" },
     { id: "what-you-can-do", title: "What you can do" },
     { id: "getting-started", title: "Getting Started" },
     { id: "api", title: "API Reference" },
+    { id: "resources", title: "Resources" },
   ];
 
   return (
@@ -32,7 +30,6 @@ export default function DocsPage() {
               transactions through AVNU paymaster integration.
             </p>
           </div>
-
           {/* Navigation */}
           <div className="flex flex-wrap justify-center gap-4 mb-12">
             {sections.map((section) => (
@@ -49,7 +46,6 @@ export default function DocsPage() {
               </button>
             ))}
           </div>
-
           {/* Content Sections */}
           <div className="max-w-4xl mx-auto">
             {/* Section 1: What is Cavos Wallet Service */}
@@ -111,7 +107,6 @@ export default function DocsPage() {
                 </div>
               </div>
             )}
-
             {/* Section 2: What you can do */}
             {activeSection === "what-you-can-do" && (
               <div className="space-y-8">
@@ -149,7 +144,6 @@ export default function DocsPage() {
                     </div>
                   </div>
                 </div>
-
                 {/* 2.2 AVNU Paymaster Integration */}
                 <div className="bg-[#1A1A16] border border-[#FFFFE3]/10 rounded-2xl p-8">
                   <h3 className="text-2xl font-semibold mb-6 text-[#FFFFE3]">
@@ -166,7 +160,6 @@ export default function DocsPage() {
                       adoption by removing the complexity of gas management.
                     </p>
                   </div>
-
                   <div className="grid md:grid-cols-2 gap-6">
                     <div className="space-y-4">
                       <h5 className="text-lg font-semibold text-[#FFFFE3]">
@@ -218,14 +211,12 @@ export default function DocsPage() {
                 </div>
               </div>
             )}
-
             {/* Section 3: Getting Started */}
             {activeSection === "getting-started" && (
               <div className="space-y-8">
                 <h2 className="text-3xl font-bold mb-6 text-[#FFFFE3]">
                   Getting Started
                 </h2>
-
                 {/* How to start and create organization */}
                 <div className="bg-[#1A1A16] border border-[#FFFFE3]/10 rounded-2xl p-8">
                   <h3 className="text-2xl font-semibold mb-6 text-[#FFFFE3]">
@@ -274,7 +265,6 @@ export default function DocsPage() {
                         and configuration options.
                       </p>
                     </div>
-
                     <div className="bg-[#11110E] border border-[#FFFFE3]/20 rounded-lg p-6">
                       <h4 className="text-lg font-semibold mb-4 flex items-center text-[#FFFFE3]">
                         <span className="bg-[#FFFFE3] text-[#11110E] rounded-full w-8 h-8 flex items-center justify-center mr-3 text-sm font-bold">
@@ -297,7 +287,6 @@ export default function DocsPage() {
                     </div>
                   </div>
                 </div>
-
                 {/* API Secret and Hash Secret */}
                 <div className="bg-[#1A1A16] border border-[#FFFFE3]/10 rounded-2xl p-8">
                   <h3 className="text-2xl font-semibold mb-6 text-[#FFFFE3]">
@@ -362,7 +351,6 @@ export default function DocsPage() {
                 </div>
               </div>
             )}
-
             {activeSection === "api" && (
               <div className="space-y-8">
                 <h2 className="text-3xl font-bold mb-6 text-[#FFFFE3]">
@@ -377,19 +365,15 @@ export default function DocsPage() {
                     <p className="text-[#FFFFE3]/70 mb-2">
                       Creates a new wallet under your organization.
                     </p>
-                    <div className="bg-[#11110E] border border-[#FFFFE3]/20 rounded-lg p-4">
-                      <pre className="text-[#FFFFE3]/80 text-sm whitespace-pre-wrap">
-                        {`curl -X POST https://api.cavos.xyz/v1/wallets \\
-  -H "Authorization: Bearer YOUR_API_KEY" \\
-  -H "Content-Type: application/json" \\
-  -d '{
-    "name": "My First Wallet",
-    "type": "hd"
-}'`}
-                      </pre>
-                    </div>
+                    <CurlSnippet
+                      code={`curl --location 'http://cavos-wallet-provider.vercel.app/api/v1/external/deploy' \\
+                                --header 'Content-Type: application/json' \\
+                                --header 'Authorization: API_KEY_HERE' \\
+                                --data '{
+                                            "network": "sepolia"
+                            }'`}
+                    />
                   </div>
-
                   <div>
                     <h3 className="text-2xl font-semibold text-[#FFFFE3] mb-4">
                       Send Transaction
@@ -397,20 +381,58 @@ export default function DocsPage() {
                     <p className="text-[#FFFFE3]/70 mb-2">
                       Sends a transaction from a wallet to a recipient.
                     </p>
-                    <div className="bg-[#11110E] border border-[#FFFFE3]/20 rounded-lg p-4">
-                      <pre className="text-[#FFFFE3]/80 text-sm whitespace-pre-wrap">
-                        {`curl -X POST https://api.cavos.xyz/v1/transactions \\
-  -H "Authorization: Bearer YOUR_API_KEY" \\
-  -H "Content-Type: application/json" \\
-  -d '{
-    "wallet_id": "wallet_abc123",
-    "to": "0x04fb...",
-    "amount": "1000000000000000000", 
-    "token_address": "0xTokenAddress"
-}'`}
-                      </pre>
-                    </div>
+                    <CurlSnippet
+                      code={`curl --location 'http://cavos-wallet-provider.vercel.app/api/v1/external/execute' \\
+                                --header 'Content-Type: application/json' \\
+                                --header 'Authorization: API_KEY_HERE' \\
+                                --data '{
+                                "network": "sepolia",
+                                "calls": [
+                                    {
+                                    "contractAddress": "0x04718f5a0Fc34cC1AF16A1cdee98fFB20C31f5cD61D6Ab07201858f4287c938D",
+                                    "entrypoint": "approve",
+                                    "calldata": [
+                                        "0x028795e04b2abaf61266faa81cc02d4d1a6ef8574fef383cdf6185ca580648aa",
+                                        "0x0",
+                                        "0x0"
+                                    ]
+                                    }
+                                ],
+                                "address": "0x3bbf55d3b5d7f5907ef3a80fbbe0578c360fb41ec48a6fb340fd36d9eff822b",
+                                "hashedPk": "U2FsdGVkX19a5enJlf4YG9nEpj/oBwftKrEf99zF1BC9I7jmVoVoyFx6DxrXHcL0e3rr3YYXVhMkWWF2gFtWF+UcCzcKNTxh+2FGrrbr00M="
+                                }'`}
+                    />
                   </div>
+                </div>
+              </div>
+            )}
+            {activeSection === "resources" && (
+              <div className="space-y-8">
+                <h2 className="text-3xl font-bold mb-6 text-[#FFFFE3]">
+                  Resources
+                </h2>
+
+                <div className="bg-[#1A1A16] border border-[#FFFFE3]/10 rounded-2xl p-8">
+                  <h3 className="text-2xl font-semibold text-[#FFFFE3] mb-6">
+                    Deploy accounts on Starknet under 2 seconds
+                  </h3>
+
+                  <div className="aspect-video w-full rounded-lg overflow-hidden">
+                    <iframe
+                      width="100%"
+                      height="100%"
+                      src="https://www.youtube.com/embed/8b4hz93k8K4"
+                      title="Deploy accounts on Starknet under 2 seconds"
+                      frameBorder="0"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                      allowFullScreen
+                      className="w-full h-full"
+                    ></iframe>
+                  </div>
+                  <p className="text-[#FFFFE3]/70 mt-4">
+                    Learn how to quickly deploy Starknet accounts using Cavos
+                    Wallet Service in under 2 seconds.
+                  </p>
                 </div>
               </div>
             )}
