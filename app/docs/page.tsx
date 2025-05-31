@@ -2,7 +2,7 @@
 import { useState } from "react";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
-import CurlSnippet from "../components/curlSnippet";
+import CurlSnippet from "../components/Curl";
 
 export default function DocsPage() {
   const [activeSection, setActiveSection] = useState("what-is");
