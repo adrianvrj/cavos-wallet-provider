@@ -12,7 +12,7 @@ import { validateRequest, withCORS } from "@/app/lib/authUtils";
 
 export async function POST(req: Request) {
   console.log(
-    `[${new Date().toISOString()}] [POST] /position endpoint hit, START.`
+    `[${new Date().toISOString()}] [POST] /api/position endpoint hit, START.`
   );
   const auth = validateRequest(req);
   if (!auth.valid) {
@@ -143,7 +143,7 @@ export async function POST(req: Request) {
       throw new Error("Transaction hash missing in response");
     }
     console.log(
-      `[${new Date().toISOString()}] [POST] /position endpoint hit, FINISH.`
+      `[${new Date().toISOString()}] [POST] /api/position endpoint, FINISH.`
     );
     return withCORS(
       NextResponse.json({
