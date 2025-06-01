@@ -14,11 +14,19 @@ const SECRET_TOKEN = process.env.SECRET_TOKEN!;
 const AVNU_API_URL = "https://starknet.api.avnu.fi/paymaster/v1";
 
 export async function POST(req: Request) {
+  console.log(
+    `[${new Date().toISOString()}] [POST] /api/wallet/send endpoint hit, START.`
+  );
   const auth = validateRequest(req);
-  if (!auth.valid) return auth.response;
+  if (!auth.valid) {
+    console.warn("Unauthorized request");
+    return auth.response;
+  }
 
   try {
     const body = await req.json();
+    console.info("Received request body:", body);
+
     const requiredFields = [
       "amount",
       "address",
@@ -29,7 +37,7 @@ export async function POST(req: Request) {
     const missingFields = requiredFields.filter((field) => !body[field]);
 
     if (missingFields.length > 0) {
-      console.error("Missing required fields:", missingFields.join(", "));
+      console.warn("Missing required fields:", missingFields.join(", "));
       return withCORS(
         NextResponse.json(
           { message: `Missing required fields: ${missingFields.join(", ")}` },
@@ -40,10 +48,11 @@ export async function POST(req: Request) {
 
     const { amount, address, hashedPk, hashedPin, receiverAddress } = body;
 
+    console.info(`Decrypting pin and private key for address: ${address}`);
     const pin = decryptPin(hashedPin, SECRET_TOKEN);
     const pk = decryptSecretWithPin(hashedPk, pin);
-    const provider = new RpcProvider({ nodeUrl: process.env.RPC });
 
+    const provider = new RpcProvider({ nodeUrl: process.env.RPC });
     const account = new Account(provider, address, pk);
 
     const calls: Call[] = [
@@ -55,8 +64,10 @@ export async function POST(req: Request) {
       },
     ];
 
+    console.info("Preparing formatted calls for AVNU:", calls);
     const formattedCalls = formatCall(calls);
 
+    console.info("Calling AVNU /build-typed-data...");
     const buildTypedRes = await fetch(`${AVNU_API_URL}/build-typed-data`, {
       method: "POST",
       headers: {
@@ -78,15 +89,18 @@ export async function POST(req: Request) {
     }
 
     const typedData: TypedData = await parseResponse(buildTypedRes);
-    console.log("TypedData built successfully.");
+    console.info("TypedData built successfully");
 
+    console.info("Signing typedData...");
     let signature = await account.signMessage(typedData);
     if (Array.isArray(signature)) {
       signature = signature.map((sig) => toBeHex(BigInt(sig)));
     } else if (signature.r && signature.s) {
       signature = [toBeHex(BigInt(signature.r)), toBeHex(BigInt(signature.s))];
     }
+    console.info("Signature generated:", signature);
 
+    console.info("Sending transaction to AVNU /execute...");
     const executeRes = await fetch(`${AVNU_API_URL}/execute`, {
       method: "POST",
       headers: {
@@ -109,15 +123,23 @@ export async function POST(req: Request) {
     }
 
     const result = await executeRes.json();
-    console.log("Transaction executed:", result);
+    console.info("Transaction executed successfully:", result);
 
     if (!result.transactionHash) {
-      throw new Error("Missing transactionHash in response.");
+      console.error("Missing transactionHash in result:", result);
+      throw new Error("Missing transactionHash in response");
     }
 
+    console.log(
+      `[${new Date().toISOString()}] [POST] /api/wallet/send endpoint, FINISH.`
+    );
     return withCORS(NextResponse.json({ result: result.transactionHash }));
   } catch (error: any) {
-    console.error("Error fetching balance:", error);
+    console.error("Unhandled error during POST execution:", {
+      message: error.message,
+      stack: error.stack,
+    });
+
     return withCORS(
       NextResponse.json(
         { message: error.message || "Internal Server Error" },
