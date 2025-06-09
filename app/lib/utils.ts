@@ -128,6 +128,6 @@ export const formatVesuAsset = (asset: VesuAsset) => {
 };
 
 export const mockAddresses = [
-  "0x03c7201a39862dd723177440ffdafa12a4a428fe9d8e2810bc7e581be1dc1b29",
-  "0x04b3424fc92e93359aab9febb6fa92f3eda58695fa74e1ae7a655474806e85ac",
+  "0x3c7201a39862dd723177440ffdafa12a4a428fe9d8e2810bc7e581be1dc1b29",
+  "0x4b3424fc92e93359aab9febb6fa92f3eda58695fa74e1ae7a655474806e85ac",
 ];
