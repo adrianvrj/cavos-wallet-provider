@@ -1,4 +1,5 @@
 import { ERC20_ABI } from "@/abis/ERC20_ABI";
+import { mockAddresses } from "@/app/lib/utils";
 import { NextResponse } from "next/server";
 import { RpcProvider, Contract } from "starknet";
 
@@ -38,6 +39,14 @@ export async function POST(req: Request) {
         { message: "Missing wallet address" },
         { status: 400 }
       );
+    }
+
+    if (mockAddresses.includes(address)) {
+      console.log(`Address: ${address} is in the mock test address.`);
+      return NextResponse.json({
+        balance: 2,
+        balanceRaw: "0.00000002",
+      });
     }
 
     const nodeUrl = process.env.RPC;
