@@ -30,7 +30,7 @@ function Header() {
 
   return (
     <>
-      <header className="w-full fixed top-0 left-0 z-50 bg-[#11110E]/50 backdrop-blur-sm py-2">
+      <header className="w-full fixed top-0 left-0 z-50 bg-[#000000]/50 backdrop-blur-sm py-2">
         <div className="container mx-auto px-4 md:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
             {/* Logo */}
@@ -49,7 +49,7 @@ function Header() {
                   className="cursor-pointer"
                 />
               </Link>
-              <p className="text-[#FFFFE3] ml-4 text-sm md:text-base">
+              <p className="text-[#EAE5DC] ml-4 text-sm md:text-base">
                 WALLET PROVIDER
               </p>
             </motion.div>
@@ -60,9 +60,19 @@ function Header() {
                 <motion.span
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  className="text-[#FFFFE3] hover:text-white transition-colors duration-300 cursor-pointer text-sm md:text-base"
+                  className="text-[#EAE5DC] hover:text-white transition-colors duration-300 cursor-pointer text-sm md:text-base"
                 >
                   Docs
+                </motion.span>
+              </Link>
+
+              <Link href="/search/tx">
+                <motion.span
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="text-[#EAE5DC] hover:text-white transition-colors duration-300 cursor-pointer text-sm md:text-base"
+                >
+                  Explorer
                 </motion.span>
               </Link>
 
@@ -72,14 +82,14 @@ function Header() {
                     <motion.span
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
-                      className="text-[#FFFFE3] hover:text-white transition-colors duration-300 cursor-pointer text-sm md:text-base"
+                      className="text-[#EAE5DC] hover:text-white transition-colors duration-300 cursor-pointer text-sm md:text-base"
                     >
                       Dashboard
                     </motion.span>
                   </Link>
                   <button
                     onClick={handleLogout}
-                    className="ml-4 bg-[#FFFFE3] text-[#11110E] px-5 py-2 rounded-lg font-semibold shadow hover:bg-[#FFFFE3]/90 transition-colors duration-300 cursor-pointer text-sm md:text-base"
+                    className="ml-4 bg-[#EAE5DC] text-[#000000] px-5 py-2 rounded-lg font-semibold shadow hover:bg-[#EAE5DC]/90 transition-colors duration-300 cursor-pointer text-sm md:text-base"
                   >
                     Logout
                   </button>
@@ -89,7 +99,7 @@ function Header() {
                   <motion.span
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
-                    className="ml-4 bg-[#FFFFE3] text-[#11110E] px-5 py-2 rounded-lg font-semibold shadow hover:bg-[#FFFFE3]/90 transition-colors duration-300 cursor-pointer text-sm md:text-base"
+                    className="ml-4 bg-[#EAE5DC] text-[#000000] px-5 py-2 rounded-lg font-semibold shadow hover:bg-[#EAE5DC]/90 transition-colors duration-300 cursor-pointer text-sm md:text-base"
                   >
                     Login
                   </motion.span>
@@ -107,17 +117,17 @@ function Header() {
                 animate={
                   isMenuOpen ? { rotate: 45, y: 6 } : { rotate: 0, y: 0 }
                 }
-                className="w-6 h-0.5 bg-[#FFFFE3] block transition-all duration-300"
+                className="w-6 h-0.5 bg-[#EAE5DC] block transition-all duration-300"
               />
               <motion.span
                 animate={isMenuOpen ? { opacity: 0 } : { opacity: 1 }}
-                className="w-6 h-0.5 bg-[#FFFFE3] block transition-all duration-300"
+                className="w-6 h-0.5 bg-[#EAE5DC] block transition-all duration-300"
               />
               <motion.span
                 animate={
                   isMenuOpen ? { rotate: -45, y: -6 } : { rotate: 0, y: 0 }
                 }
-                className="w-6 h-0.5 bg-[#FFFFE3] block transition-all duration-300"
+                className="w-6 h-0.5 bg-[#EAE5DC] block transition-all duration-300"
               />
             </button>
           </div>
@@ -130,14 +140,14 @@ function Header() {
                 animate={{ opacity: 1, height: "auto" }}
                 exit={{ opacity: 0, height: 0 }}
                 transition={{ duration: 0.3 }}
-                className="md:hidden mt-4 bg-[#11110E]/90 backdrop-blur-sm rounded-lg overflow-hidden"
+                className="md:hidden mt-4 bg-[#000000]/90 backdrop-blur-sm rounded-lg overflow-hidden"
               >
                 <div className="px-4 py-4 space-y-4">
                   <Link href="/docs" onClick={closeMenu}>
                     <motion.div
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
-                      className="text-[#FFFFE3] hover:text-white transition-colors duration-300 cursor-pointer text-base py-2 border-b border-[#FFFFE3]/20 last:border-b-0"
+                      className="text-[#EAE5DC] hover:text-white transition-colors duration-300 cursor-pointer text-base py-2 border-b border-[#EAE5DC]/20 last:border-b-0"
                     >
                       Docs
                     </motion.div>
@@ -149,14 +159,14 @@ function Header() {
                         <motion.div
                           whileHover={{ scale: 1.02 }}
                           whileTap={{ scale: 0.98 }}
-                          className="text-[#FFFFE3] hover:text-white transition-colors duration-300 cursor-pointer text-base py-2 border-b border-[#FFFFE3]/20"
+                          className="text-[#EAE5DC] hover:text-white transition-colors duration-300 cursor-pointer text-base py-2 border-b border-[#EAE5DC]/20"
                         >
                           Dashboard
                         </motion.div>
                       </Link>
                       <button
                         onClick={handleLogout}
-                        className="w-full bg-[#FFFFE3] text-[#11110E] px-5 py-3 rounded-lg font-semibold shadow hover:bg-[#FFFFE3]/90 transition-colors duration-300 cursor-pointer text-base"
+                        className="w-full bg-[#EAE5DC] text-[#000000] px-5 py-3 rounded-lg font-semibold shadow hover:bg-[#EAE5DC]/90 transition-colors duration-300 cursor-pointer text-base"
                       >
                         Logout
                       </button>
@@ -166,7 +176,7 @@ function Header() {
                       <motion.div
                         whileHover={{ scale: 1.02 }}
                         whileTap={{ scale: 0.98 }}
-                        className="w-full bg-[#FFFFE3] text-[#11110E] px-5 py-3 rounded-lg font-semibold shadow hover:bg-[#FFFFE3]/90 transition-colors duration-300 cursor-pointer text-base text-center"
+                        className="w-full bg-[#EAE5DC] text-[#000000] px-5 py-3 rounded-lg font-semibold shadow hover:bg-[#EAE5DC]/90 transition-colors duration-300 cursor-pointer text-base text-center"
                       >
                         Login
                       </motion.div>
