@@ -1,7 +1,14 @@
 import { RequestError, ContractError, GaslessOptions } from "@avnu/gasless-sdk";
 import CryptoJs from "crypto-js";
-import { cairo, Call, CallData, ec, hash, RawArgs, Uint256 } from "starknet";
+import { cairo, ec, hash, Uint256 } from "starknet";
 import { VesuAsset, VesuPool } from "@/types/vesu";
+
+type TokenTransfer = {
+  token: string;
+  from: string;
+  to: string;
+  amount: string;
+};
 
 export function decryptPin(encryptedPin: any, secret: any) {
   const bytes = CryptoJs.AES.decrypt(encryptedPin, secret);
@@ -126,6 +133,44 @@ export const formatVesuAsset = (asset: VesuAsset) => {
     vTokenAddress: asset.vToken.address,
   };
 };
+
+export function extractTokenTransfers(response: any): {
+  tokenTransfers: TokenTransfer[];
+  events: Array<{
+    name: string;
+    from: string;
+    to: string;
+    amount?: string;
+    contractAlias?: string;
+    timestamp?: number;
+    [key: string]: any;
+  }>;
+} {
+  // Token transfers
+  const tokenTransfers: TokenTransfer[] = Array.isArray(response?.receipt?.tokensTransferred)
+    ? response.receipt.tokensTransferred.map((transfer: any) => ({
+        token: transfer.symbol || transfer.token_symbol || 'UNKNOWN',
+        from: transfer.from,
+        to: transfer.to,
+        amount: transfer.amount,
+      }))
+    : [];
+
+  // Events (human readable)
+  const events: Array<any> = Array.isArray(response?.receipt?.events)
+    ? response.receipt.events.map((event: any) => ({
+        name: event.name || event.nestedName || 'Unknown',
+        from: event.fromAddress,
+        to: event.toAddress,
+        amount: event.amount,
+        contractAlias: event.contractAlias,
+        timestamp: event.timestamp,
+        // Puedes agregar más campos si los necesitas
+      }))
+    : [];
+
+  return { tokenTransfers, events };
+}
 
 export const mockAddresses = [
   "0x3c7201a39862dd723177440ffdafa12a4a428fe9d8e2810bc7e581be1dc1b29",

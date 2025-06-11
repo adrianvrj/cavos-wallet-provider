@@ -57,29 +57,29 @@ export default function PricingPage() {
     return (
         <>
             <Header />
-            <div className="mt-14 bg-[#11110E] text-white flex flex-col items-center py-16 px-4">
+            <div className="mt-14 bg-[#000000] text-white flex flex-col items-center py-16 px-4">
                 <h1 className="text-4xl md:text-5xl font-bold mb-6 text-center">
-                    Choose your <span className="text-[#FFFFE3]">plan</span>
+                    Choose your <span className="text-[#EAE5DC]">plan</span>
                 </h1>
-                <p className="text-lg text-[#FFFFE3]/80 mb-12 text-center max-w-2xl">
+                <p className="text-lg text-[#EAE5DC]/80 mb-12 text-center max-w-2xl">
                     Select the plan that best fits your needs and start enjoying Cavos Wallet Provider.
                 </p>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8 w-full max-w-5xl">
                     {plans.map((plan) => (
                         <div
                             key={plan.name}
-                            className="bg-[#1A1A16] border border-[#FFFFE3]/10 rounded-2xl p-8 flex flex-col h-full items-center shadow-lg"
+                            className="bg-[#000000] border border-[#EAE5DC]/10 rounded-2xl p-8 flex flex-col h-full items-center shadow-lg"
                             style={{ minHeight: 480 }} // Optional: set a minHeight for extra consistency
                         >
-                            <h2 className="text-2xl font-bold mb-2 text-[#FFFFE3]">{plan.name}</h2>
+                            <h2 className="text-2xl font-bold mb-2 text-[#EAE5DC]">{plan.name}</h2>
                             <div className="text-4xl font-bold mb-2">
                                 {plan.price === '0' ? 'Free' : `$${plan.price}/year`}
                             </div>
-                            <p className="mb-6 text-[#FFFFE3]/70 text-center">{plan.description}</p>
-                            <ul className="mb-8 space-y-2 text-[#FFFFE3]/90 text-left w-full">
+                            <p className="mb-6 text-[#EAE5DC]/70 text-center">{plan.description}</p>
+                            <ul className="mb-8 space-y-2 text-[#EAE5DC]/90 text-left w-full">
                                 {plan.features.map((feature, idx) => (
                                     <li key={idx} className="flex items-center gap-2">
-                                        <span className="text-[#FFFFE3]">✓</span>
+                                        <span className="text-[#EAE5DC]">✓</span>
                                         <span>{feature}</span>
                                     </li>
                                 ))}
@@ -87,20 +87,20 @@ export default function PricingPage() {
                             <div className="w-full mt-auto flex">
                                 {plan.disabled ? (
                                     <button
-                                        className="bg-[#FFFFE3]/20 text-[#FFFFE3] px-6 py-3 rounded-lg font-medium cursor-not-allowed w-full"
+                                        className="bg-[#EAE5DC]/20 text-[#EAE5DC] px-6 py-3 rounded-lg font-medium cursor-not-allowed w-full"
                                         disabled
                                     >
                                         {plan.cta}
                                     </button>
                                 ) : (
                                     <button
-                                        className={`hover:cursor-pointer bg-[#FFFFE3] text-[#11110E] px-6 py-3 rounded-lg font-medium hover:bg-[#FFFFE3]/90 transition-colors duration-300 w-full flex items-center justify-center ${loading === plan.productId ? 'opacity-70 cursor-not-allowed' : ''}`}
+                                        className={`hover:cursor-pointer bg-[#EAE5DC] text-[#000000] px-6 py-3 rounded-lg font-medium hover:bg-[#EAE5DC]/90 transition-colors duration-300 w-full flex items-center justify-center ${loading === plan.productId ? 'opacity-70 cursor-not-allowed' : ''}`}
                                         onClick={() => handleBuy(plan.productId!)}
                                         disabled={loading === plan.productId}
                                     >
                                         {loading === plan.productId ? (
                                             <>
-                                                <svg className="animate-spin h-5 w-5 mr-2 text-[#11110E]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                                <svg className="animate-spin h-5 w-5 mr-2 text-[#000000]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                                                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                                                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
                                                 </svg>
