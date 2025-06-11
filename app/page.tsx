@@ -58,7 +58,7 @@ export default function Home() {
 
   return (
     <>
-      <div className="min-h-screen p-4 md:p-10 lg:p-20 text-white bg-[#11110E]">
+      <div className="min-h-screen p-4 md:p-10 lg:p-20 text-white bg-[#000000]">
         <main className="container mx-auto px-4 py-4 md:py-8">
           <Header />
 
@@ -72,20 +72,20 @@ export default function Home() {
                 className="flex-1"
               >
                 <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl mb-6 md:mb-10 leading-tight font-bold">
-                  <span className="text-[#FFFFE3]">SMART WALLETS</span><br />
+                  <span className="text-[#EAE5DC]">SMART WALLETS</span><br />
                   FOR THE MODERN CRYPTO ERA
                 </h1>
-                <p className="text-lg md:text-xl mb-8 text-[#FFFFE3]/80 max-w-2xl">
+                <p className="text-lg md:text-xl mb-8 text-[#EAE5DC]/80 max-w-2xl">
                   Secure, intuitive and packed with features. Experience crypto management like never before.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4">
                   <button
                     onClick={scrollToDemo}
-                    className="bg-[#FFFFE3] text-[#11110E] px-8 py-3 font-medium hover:bg-[#FFFFE3]/90 transition-colors duration-300 rounded-lg"
+                    className="bg-[#EAE5DC] text-[#000000] px-8 py-3 font-medium hover:bg-[#EAE5DC]/90 transition-colors duration-300 rounded-lg"
                   >
                     Book a Demo
                   </button>
-                  <button className="border-2 border-[#FFFFE3] px-8 py-3 font-medium hover:bg-[#FFFFE3]/10 transition-colors duration-300 rounded-lg">
+                  <button className="border-2 border-[#EAE5DC] px-8 py-3 font-medium hover:bg-[#EAE5DC]/10 transition-colors duration-300 rounded-lg">
                     Learn More
                   </button>
                 </div>
@@ -97,7 +97,7 @@ export default function Home() {
                 transition={{ duration: 0.8, delay: 0.6 }}
                 className="flex-1 flex justify-center"
               >
-                <div className="relative w-full max-w-md aspect-[1.8/1] bg-gradient-to-br from-[#FFFFE3]/10 to-[#FFFFE3]/5 rounded-2xl overflow-hidden border border-[#FFFFE3]/20 shadow-lg">
+                <div className="relative w-full max-w-md aspect-[1.8/1] bg-gradient-to-br from-[#EAE5DC]/10 to-[#EAE5DC]/5 rounded-2xl overflow-hidden border border-[#EAE5DC]/20 shadow-lg">
                   <div className="absolute inset-0 flex items-center justify-center p-8">
                     <div className="relative w-full h-full">
                       <Image
@@ -129,9 +129,9 @@ export default function Home() {
               className="text-center mb-16"
             >
               <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4">
-                OUR <span className="text-[#FFFFE3]">SERVICES</span>
+                OUR <span className="text-[#EAE5DC]">SERVICES</span>
               </h2>
-              <p className="text-lg md:text-xl text-[#FFFFE3]/80 max-w-3xl mx-auto">
+              <p className="text-lg md:text-xl text-[#EAE5DC]/80 max-w-3xl mx-auto">
                 Explore our range of services tailored to meet the needs of both crypto enthusiasts and developers.
               </p>
             </motion.div>
@@ -143,10 +143,10 @@ export default function Home() {
                 transition={{ duration: 0.5 }}
                 className="flex flex-col md:flex-row items-start gap-6"
               >
-                <div className="text-4xl text-[#FFFFE3]">🔐</div>
+                <div className="text-4xl text-[#EAE5DC]">🔐</div>
                 <div>
-                  <h3 className="text-2xl font-bold text-[#FFFFE3] mb-2">Smart Wallets</h3>
-                  <p className="text-[#FFFFE3]/80">
+                  <h3 className="text-2xl font-bold text-[#EAE5DC] mb-2">Smart Wallets</h3>
+                  <p className="text-[#EAE5DC]/80">
                     Deploy smart crypto account wallets with just one simple call. Enjoy the benefits of a non-custodial wallet with advanced security features and seamless user experience.
                   </p>
                 </div>
@@ -158,10 +158,10 @@ export default function Home() {
                 transition={{ duration: 0.5, delay: 0.1 }}
                 className="flex flex-col md:flex-row items-start gap-6"
               >
-                <div className="text-4xl text-[#FFFFE3]">🏄🏻‍♂️</div>
+                <div className="text-4xl text-[#EAE5DC]">🏄🏻‍♂️</div>
                 <div>
-                  <h3 className="text-2xl font-bold text-[#FFFFE3] mb-2">Onboarding</h3>
-                  <p className="text-[#FFFFE3]/80">
+                  <h3 className="text-2xl font-bold text-[#EAE5DC] mb-2">Onboarding</h3>
+                  <p className="text-[#EAE5DC]/80">
                     Let your users onboard with ease. Our wallet service provides a seamless onboarding experience, allowing users to create and manage their wallets effortlessly.
                   </p>
                 </div>
@@ -173,10 +173,10 @@ export default function Home() {
                 transition={{ duration: 0.5, delay: 0.2 }}
                 className="flex flex-col md:flex-row items-start gap-6"
               >
-                <div className="text-4xl text-[#FFFFE3]">𐄳</div>
+                <div className="text-4xl text-[#EAE5DC]">𐄳</div>
                 <div>
-                  <h3 className="text-2xl font-bold text-[#FFFFE3] mb-2">Network Support</h3>
-                  <p className="text-[#FFFFE3]/80">
+                  <h3 className="text-2xl font-bold text-[#EAE5DC] mb-2">Network Support</h3>
+                  <p className="text-[#EAE5DC]/80">
                     Deploy your wallets on any network, Sepolia or Mainnet. No matter your product stage or network of choice, we have you covered.
                   </p>
                 </div>
@@ -185,12 +185,12 @@ export default function Home() {
           </section>
 
           {/* Wallet Stats Section */}
-          <section className="py-16 md:py-24 bg-gradient-to-br from-[#FFFFE3]/5 to-[#FFFFE3]/10 rounded-3xl">
+          <section className="py-16 md:py-24 bg-gradient-to-br from-[#EAE5DC]/5 to-[#EAE5DC]/10 rounded-3xl">
             <div className="text-center mb-16">
               <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4">
-                <span className="text-[#FFFFE3]">TRUSTED</span> BY EARLY ADOPTERS
+                <span className="text-[#EAE5DC]">TRUSTED</span> BY EARLY ADOPTERS
               </h2>
-              <p className="text-lg md:text-xl text-[#FFFFE3]/80 max-w-3xl mx-auto">
+              <p className="text-lg md:text-xl text-[#EAE5DC]/80 max-w-3xl mx-auto">
                 Join our growing community of crypto enthusiasts
               </p>
             </div>
@@ -202,13 +202,13 @@ export default function Home() {
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, delay: index * 0.1 }}
-                  className="bg-[#11110E] border border-[#FFFFE3]/20 rounded-xl p-8 text-center"
+                  className="bg-[#000000] border border-[#EAE5DC]/20 rounded-xl p-8 text-center"
                 >
-                  <div className="text-5xl font-bold text-[#FFFFE3] mb-2">
+                  <div className="text-5xl font-bold text-[#EAE5DC] mb-2">
                     {stat.count.toLocaleString()}+
                   </div>
                   <h3 className="text-xl font-semibold mb-2">{stat.network} Wallets</h3>
-                  {/* <p className="text-[#FFFFE3]/70">{stat.description}</p> */}
+                  {/* <p className="text-[#EAE5DC]/70">{stat.description}</p> */}
                 </motion.div>
               ))}
             </div>
@@ -218,9 +218,9 @@ export default function Home() {
           <section className="py-16 md:py-24">
             <div className="text-center mb-16">
               <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4">
-                BUILT WITH <span className="text-[#FFFFE3]">MODERN TECH</span>
+                BUILT WITH <span className="text-[#EAE5DC]">MODERN TECH</span>
               </h2>
-              <p className="text-lg md:text-xl text-[#FFFFE3]/80 max-w-3xl mx-auto">
+              <p className="text-lg md:text-xl text-[#EAE5DC]/80 max-w-3xl mx-auto">
                 Leveraging cutting-edge technologies for maximum performance and security
               </p>
             </div>
@@ -247,7 +247,7 @@ export default function Home() {
                       className="object-contain filter brightness-75 hover:brightness-100 transition-all duration-300"
                     />
                   </div>
-                  <p className="text-sm font-medium mt-2 text-[#FFFFE3]/80">{tech.name}</p>
+                  <p className="text-sm font-medium mt-2 text-[#EAE5DC]/80">{tech.name}</p>
                 </motion.div>
               ))}
             </div>
@@ -256,7 +256,7 @@ export default function Home() {
           {/* Demo Booking Section */}
           <section
             ref={demoRef}
-            className="py-16 md:py-24 border-t border-[#FFFFE3]/10"
+            className="py-16 md:py-24 border-t border-[#EAE5DC]/10"
           >
             <div className="flex flex-col lg:flex-row gap-12 items-center">
               <motion.div
@@ -266,9 +266,9 @@ export default function Home() {
                 className="flex-1"
               >
                 <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6">
-                  READY TO <span className="text-[#FFFFE3]">GET STARTED?</span>
+                  READY TO <span className="text-[#EAE5DC]">GET STARTED?</span>
                 </h2>
-                <p className="text-lg md:text-xl text-[#FFFFE3]/80 mb-8 max-w-xl">
+                <p className="text-lg md:text-xl text-[#EAE5DC]/80 mb-8 max-w-xl">
                   Schedule a personalized demo and discover how our wallet can transform your crypto experience.
                 </p>
                 <div className="space-y-4">
@@ -279,7 +279,7 @@ export default function Home() {
                     "✓ 24/7 customer support",
                   ].map((feature, index) => (
                     <div key={index} className="flex items-center gap-3">
-                      <div className="text-[#FFFFE3]">{feature.split('✓')[0]}</div>
+                      <div className="text-[#EAE5DC]">{feature.split('✓')[0]}</div>
                       <p>{feature.split('✓')[1]}</p>
                     </div>
                   ))}
@@ -292,18 +292,18 @@ export default function Home() {
                 transition={{ duration: 0.7 }}
                 className="flex-1 w-full max-w-md"
               >
-                <div className="bg-[#FFFFE3]/5 border border-[#FFFFE3]/10 rounded-2xl p-8 text-center">
-                  <h3 className="text-2xl font-bold mb-6 text-[#FFFFE3]">
+                <div className="bg-[#EAE5DC]/5 border border-[#EAE5DC]/10 rounded-2xl p-8 text-center">
+                  <h3 className="text-2xl font-bold mb-6 text-[#EAE5DC]">
                     Book a Demo
                   </h3>
-                  <p className="text-lg text-[#FFFFE3]/80 mb-6">
+                  <p className="text-lg text-[#EAE5DC]/80 mb-6">
                     Click the button below to schedule your demo at your convenience.
                   </p>
                   <a
                     href="https://cal.com/adrian-vrj/30min"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-block bg-[#FFFFE3] text-[#11110E] px-8 py-3 font-medium hover:bg-[#FFFFE3]/90 transition-colors duration-300 rounded-lg"
+                    className="inline-block bg-[#EAE5DC] text-[#000000] px-8 py-3 font-medium hover:bg-[#EAE5DC]/90 transition-colors duration-300 rounded-lg"
                   >
                     Schedule Demo
                   </a>

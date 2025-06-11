@@ -40,7 +40,7 @@ function LoginForm({ onSuccess }: { onSuccess: () => void }) {
         type="email"
         required
         placeholder="Email"
-        className="px-4 py-3 rounded-lg bg-[#1A1A16] border border-[#FFFFE3]/20 text-white"
+        className="px-4 py-3 rounded-lg bg-[#000000] border border-[#EAE5DC]/20 text-white"
         value={email}
         onChange={e => setEmail(e.target.value)}
       />
@@ -48,13 +48,13 @@ function LoginForm({ onSuccess }: { onSuccess: () => void }) {
         type="password"
         required
         placeholder="Password"
-        className="px-4 py-3 rounded-lg bg-[#1A1A16] border border-[#FFFFE3]/20 text-white"
+        className="px-4 py-3 rounded-lg bg-[#000000] border border-[#EAE5DC]/20 text-white"
         value={password}
         onChange={e => setPassword(e.target.value)}
       />
       <button
         type="submit"
-        className="bg-[#FFFFE3] text-[#11110E] px-6 py-3 rounded-lg font-medium hover:bg-[#FFFFE3]/90 transition-colors duration-300"
+        className="bg-[#EAE5DC] text-[#000000] px-6 py-3 rounded-lg font-medium hover:bg-[#EAE5DC]/90 transition-colors duration-300"
         disabled={loading}
       >
         {loading ? 'Signing in...' : 'Sign In'}
@@ -101,7 +101,7 @@ function SignUpForm({ onSuccess }: { onSuccess: () => void }) {
         type="email"
         required
         placeholder="Email"
-        className="px-4 py-3 rounded-lg bg-[#1A1A16] border border-[#FFFFE3]/20 text-white"
+        className="px-4 py-3 rounded-lg bg-[#000000] border border-[#EAE5DC]/20 text-white"
         value={email}
         onChange={e => setEmail(e.target.value)}
       />
@@ -109,13 +109,13 @@ function SignUpForm({ onSuccess }: { onSuccess: () => void }) {
         type="password"
         required
         placeholder="Password"
-        className="px-4 py-3 rounded-lg bg-[#1A1A16] border border-[#FFFFE3]/20 text-white"
+        className="px-4 py-3 rounded-lg bg-[#000000] border border-[#EAE5DC]/20 text-white"
         value={password}
         onChange={e => setPassword(e.target.value)}
       />
       <button
         type="submit"
-        className="bg-[#FFFFE3] text-[#11110E] px-6 py-3 rounded-lg font-medium hover:bg-[#FFFFE3]/90 transition-colors duration-300"
+        className="bg-[#EAE5DC] text-[#000000] px-6 py-3 rounded-lg font-medium hover:bg-[#EAE5DC]/90 transition-colors duration-300"
         disabled={loading}
       >
         {loading ? 'Registering...' : 'Sign Up'}
@@ -140,15 +140,15 @@ export default function LoginPage() {
   return (
     <>
       <Header />
-      <div className="min-h-screen flex flex-col bg-[#11110E] text-white">
+      <div className="min-h-screen flex flex-col bg-[#000000] text-white">
         <div className="flex flex-1 w-full max-w-6xl mx-auto my-auto h-full min-h-[600px]">
           {/* Left section */}
           <div className="hidden md:flex flex-col justify-center items-start flex-1 px-12 py-16 rounded-l-3xl">
-            <h1 className="text-5xl font-bold mb-6 text-[#FFFFE3]">Welcome to Cavos</h1>
-            <p className="text-lg text-[#FFFFE3]/80 mb-4 max-w-md">
+            <h1 className="text-5xl font-bold mb-6 text-[#EAE5DC]">Welcome to Cavos</h1>
+            <p className="text-lg text-[#EAE5DC]/80 mb-4 max-w-md">
               Manage your wallets and organizations securely and easily.
             </p>
-            <ul className="text-[#FFFFE3]/70 space-y-2 text-base mt-4">
+            <ul className="text-[#EAE5DC]/70 space-y-2 text-base mt-4">
               <li>✓ Unlimited Sepolia accounts</li>
               <li>✓ Mainnet support</li>
               <li>✓ Organization management</li>
@@ -156,21 +156,21 @@ export default function LoginPage() {
             </ul>
           </div>
           {/* Right section: Login/Sign Up */}
-          <div className="flex flex-col justify-center items-center flex-1 px-8 py-16 bg-[#11110E] rounded-r-3xl border-l border-[#FFFFE3]/10">
+          <div className="flex flex-col justify-center items-center flex-1 px-8 py-16 bg-[#000000] rounded-r-3xl border-l border-[#EAE5DC]/10">
             <div className="w-full max-w-md">
-              <h2 className="text-3xl font-bold mb-6 text-[#FFFFE3]">
+              <h2 className="text-3xl font-bold mb-6 text-[#EAE5DC]">
                 {mode === 'signin' ? 'Sign In' : 'Sign Up'}
               </h2>
               <div className="flex gap-4 mb-6">
                 <button
-                  className={`px-4 py-2 rounded-lg font-medium ${mode === 'signin' ? 'bg-[#FFFFE3] text-[#11110E]' : 'bg-[#11110E] text-[#FFFFE3] border border-[#FFFFE3]/20'}`}
+                  className={`px-4 py-2 rounded-lg font-medium ${mode === 'signin' ? 'bg-[#EAE5DC] text-[#000000]' : 'bg-[#000000] text-[#EAE5DC] border border-[#EAE5DC]/20'}`}
                   onClick={() => { setMode('signin'); setStep('login'); }}
                   disabled={mode === 'signin'}
                 >
                   Sign In
                 </button>
                 <button
-                  className={`px-4 py-2 rounded-lg font-medium ${mode === 'signup' ? 'bg-[#FFFFE3] text-[#11110E]' : 'bg-[#11110E] text-[#FFFFE3] border border-[#FFFFE3]/20'}`}
+                  className={`px-4 py-2 rounded-lg font-medium ${mode === 'signup' ? 'bg-[#EAE5DC] text-[#000000]' : 'bg-[#000000] text-[#EAE5DC] border border-[#EAE5DC]/20'}`}
                   onClick={() => { setMode('signup'); setStep('login'); }}
                   disabled={mode === 'signup'}
                 >
@@ -183,15 +183,15 @@ export default function LoginPage() {
                   : <SignUpForm onSuccess={handleSignUpSuccess} />
               )}
               {step === 'success' && (
-                <div className="text-center text-[#FFFFE3] mt-8">
+                <div className="text-center text-[#EAE5DC] mt-8">
                   <div className="text-2xl font-semibold mb-2">Login successful!</div>
-                  <div className="text-[#FFFFE3]/80">Welcome back to Cavos Wallet Provider.</div>
+                  <div className="text-[#EAE5DC]/80">Welcome back to Cavos Wallet Provider.</div>
                 </div>
               )}
               {step === 'confirm' && (
-                <div className="text-center text-[#FFFFE3] mt-8">
+                <div className="text-center text-[#EAE5DC] mt-8">
                   <div className="text-2xl font-semibold mb-2">Check your email</div>
-                  <div className="text-[#FFFFE3]/80">
+                  <div className="text-[#EAE5DC]/80">
                     Please confirm your email address to complete your registration.
                   </div>
                 </div>
