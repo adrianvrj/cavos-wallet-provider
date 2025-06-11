@@ -7,6 +7,7 @@ import Footer from '@/app/components/Footer';
 
 export default function SearchTxPage() {
     const [txHash, setTxHash] = useState('');
+    const [network, setNetwork] = useState<'mainnet' | 'sepolia'>('mainnet');
     const [loading, setLoading] = useState(false);
     const [result, setResult] = useState<any>(null);
     const [error, setError] = useState<string | null>(null);
@@ -22,7 +23,7 @@ export default function SearchTxPage() {
         }
         setLoading(true);
         try {
-            const res = await axios.get(`/api/v1/external/tx?txHash=${txHash.trim()}`);
+            const res = await axios.get(`/api/v1/external/tx?txHash=${txHash.trim()}&network=${network}`);
             setResult(res.data.transfers);
             setActiveTab('transactions');
         } catch (err: any) {
@@ -87,6 +88,22 @@ export default function SearchTxPage() {
                                     autoFocus
                                 />
                             </div>
+                            <div className="flex gap-4 items-center">
+                                <label className="text-[#EAE5DC]/80 font-medium">Network:</label>
+                                <select
+                                    className="px-4 py-2 rounded-lg bg-[#1A1A16] border border-[#EAE5DC]/20 text-white focus:outline-none"
+                                    value={network}
+                                    onChange={e => setNetwork(e.target.value as 'mainnet' | 'sepolia')}
+                                >
+                                    <option value="mainnet">Mainnet (real money)</option>
+                                    <option value="sepolia">Sepolia (test network)</option>
+                                </select>
+                                <span className="text-xs text-[#EAE5DC]/60">
+                                    {network === 'mainnet'
+                                        ? 'Mainnet is the real blockchain network.'
+                                        : 'Sepolia is a test network, not real money.'}
+                                </span>
+                            </div>
                             <button
                                 type="submit"
                                 className="w-full bg-[#EAE5DC] text-[#000000] px-8 py-4 text-lg font-bold rounded-xl hover:bg-[#EAE5DC]/90 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
@@ -113,11 +130,21 @@ export default function SearchTxPage() {
                         <div className="bg-[#000000] rounded-xl p-8 border-2 border-[#EAE5DC]/20">
                             <div className="text-center mb-6">
                                 <div className="flex items-center justify-center gap-3 mb-4">
-                                    <CheckCircle size={32} className="text-green-400" />
-                                    <h2 className="text-3xl font-bold text-[#EAE5DC]">Transaction Found!</h2>
+                                    {(!result.tokenTransfers?.length && !result.events?.length) ? (
+                                        <AlertCircle size={32} className="text-red-400" />
+                                    ) : (
+                                        <CheckCircle size={32} className="text-green-400" />
+                                    )}
+                                    <h2 className="text-3xl font-bold text-[#EAE5DC]">
+                                        {(!result.tokenTransfers?.length && !result.events?.length)
+                                            ? 'Transaction not found!'
+                                            : 'Transaction Found!'}
+                                    </h2>
                                 </div>
                                 <div className="text-[#EAE5DC]/70 text-lg mb-6">
-                                    Here's what happened in this transaction
+                                    {(!result.tokenTransfers?.length && !result.events?.length)
+                                        ? "We couldn't find any information for this transaction."
+                                        : "Here's what happened in this transaction"}
                                 </div>
                             </div>
                         </div>

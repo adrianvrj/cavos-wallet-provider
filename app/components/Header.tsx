@@ -153,6 +153,16 @@ function Header() {
                     </motion.div>
                   </Link>
 
+                  <Link href="/search/tx">
+                    <motion.span
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      className="text-[#EAE5DC] hover:text-white transition-colors duration-300 cursor-pointer text-sm md:text-base"
+                    >
+                      Explorer
+                    </motion.span>
+                  </Link>
+
                   {user ? (
                     <>
                       <Link href="/dashboard" onClick={closeMenu}>
