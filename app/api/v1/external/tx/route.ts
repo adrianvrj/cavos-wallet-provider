@@ -5,10 +5,21 @@ export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
     const txHash = searchParams.get("txHash");
+    const network = searchParams.get("network") || "mainnet";
+
     if (!txHash) {
       return NextResponse.json({ error: "txHash is required" }, { status: 400 });
     }
-    const voyagerRes = await fetch(`https://voyager.online/api/txn/${txHash}`);
+    if (network !== "mainnet" && network !== "sepolia") {
+      return NextResponse.json({ error: "network must be 'mainnet' or 'sepolia'" }, { status: 400 });
+    }
+
+    const voyagerUrl =
+      network === "sepolia"
+        ? `https://sepolia.voyager.online/api/txn/${txHash}`
+        : `https://voyager.online/api/txn/${txHash}`;
+
+    const voyagerRes = await fetch(voyagerUrl);
     if (!voyagerRes.ok) {
       return NextResponse.json({ error: "Failed to fetch transaction from Voyager" }, { status: 502 });
     }
