@@ -1,5 +1,6 @@
 import { ERC20_ABI } from "@/abis/ERC20_ABI";
 import { validateRequest, withCORS } from "@/app/lib/authUtils";
+import { mockAddresses } from "@/app/lib/utils";
 import { NextResponse } from "next/server";
 import { RpcProvider, Contract } from "starknet";
 
@@ -30,6 +31,16 @@ export async function POST(req: Request) {
           { message: "Missing wallet address" },
           { status: 400 }
         )
+      );
+    }
+
+    if (mockAddresses.includes(address)) {
+      console.log(`Address: ${address} is in the mock test address.`);
+      return withCORS(
+        NextResponse.json({
+          balance: 5000,
+          balanceRaw: "0.005",
+        })
       );
     }
 

@@ -17,15 +17,15 @@ export default function CurlSnippet({ code }: Props) {
   };
 
   return (
-    <div className="relative bg-[#11110E] border border-[#FFFFE3]/20 rounded-lg p-4">
+    <div className="relative bg-[#000000] border border-[#EAE5DC]/20 rounded-lg p-4">
       <button
         onClick={handleCopy}
-        className="absolute top-3 right-3 text-[#FFFFE3]/50 hover:text-[#FFFFE3] transition-colors"
+        className="absolute top-3 right-3 text-[#EAE5DC]/50 hover:text-[#EAE5DC] transition-colors"
         aria-label="Copy to clipboard"
       >
         {copied ? <Check size={18} /> : <Copy size={18} />}
       </button>
-      <pre className="text-[#FFFFE3]/80 text-sm overflow-x-auto whitespace-pre font-mono">
+      <pre className="text-[#EAE5DC]/80 text-sm overflow-x-auto whitespace-pre font-mono">
         {code}
       </pre>
     </div>

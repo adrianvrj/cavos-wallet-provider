@@ -27,7 +27,7 @@ export default function RootLayout({
 }>) {
 	return (
 		<html lang="en" suppressHydrationWarning>
-			<body className={`${satoshi.className} bg-[#11110E] text-white`}>
+			<body className={`${satoshi.className} bg-[#000000] text-white`}>
 				{children}
 			</body>
 		</html>
