@@ -23,9 +23,6 @@ const supabase = createClient(
   }
 );
 
-const ARGENT_ACCOUNT_CLASS_HASH =
-  "0x1a736d6ed154502257f02b1ccdf4d9d1089f80811cd6acad48e6b6a9d1f2003";
-
 export async function POST(req: Request) {
   console.log(
     `[${new Date().toISOString()}] [POST] /api/v1/external/deploy endpoint hit, START.`
@@ -45,7 +42,7 @@ export async function POST(req: Request) {
 
     const { data, error } = await supabase
       .from("org")
-      .select("id, hash_secret")
+      .select("id, hash_secret, active")
       .eq("secret", token);
 
     if (error) {
@@ -80,10 +77,13 @@ export async function POST(req: Request) {
       );
     }
 
-    const rpcUrl =
-      network === "sepolia" ? process.env.SEPOLIA_RPC : process.env.RPC;
-    const provider = new RpcProvider({ nodeUrl: rpcUrl });
-    console.log(`Using ${network} provider`);
+    if (network === "mainnet" && !org.active) {
+      console.warn("Org is not active");
+      return NextResponse.json(
+        { message: "Org is not active to deploy on mainnet, please contact sales." },
+        { status: 400 }
+      );
+    }
 
     const avnuPaymasterUrl =
       network === "sepolia"

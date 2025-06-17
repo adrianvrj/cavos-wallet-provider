@@ -36,7 +36,7 @@ export async function POST(req: Request) {
 
     const { data, error } = await supabase
       .from("org")
-      .select("id, hash_secret")
+      .select("id, hash_secret, active")
       .eq("secret", token);
 
     const org = data?.[0];
@@ -67,6 +67,14 @@ export async function POST(req: Request) {
       console.warn("Unsupported network received:", network);
       return NextResponse.json(
         { message: "Network is not supported" },
+        { status: 400 }
+      );
+    }
+
+    if (network === "mainnet" && !org.active) {
+      console.warn("Org is not active");
+      return NextResponse.json(
+        { message: "Org is not active to execute on mainnet, please contact sales." },
         { status: 400 }
       );
     }
