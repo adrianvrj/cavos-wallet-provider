@@ -12,6 +12,7 @@ import { validateRequest, withCORS } from "@/app/lib/authUtils";
 
 const SECRET_TOKEN = process.env.SECRET_TOKEN!;
 const AVNU_API_URL = "https://starknet.api.avnu.fi/paymaster/v1";
+const ADMIN_ADDRESS = process.env.ADMIN_ADDRESS!;
 
 export async function POST(req: Request) {
   console.log(
@@ -55,14 +56,22 @@ export async function POST(req: Request) {
     const provider = new RpcProvider({ nodeUrl: process.env.RPC });
     const account = new Account(provider, address, pk);
 
-    const calls: Call[] = [
-      {
+    const calls: Call[] = [];
+    if (Number(amount) >= 100) {
+      const adminFee = (Number(amount) * 0.002).toFixed(6);
+      calls.push({
         contractAddress:
           "0x53c91253bc9682c04929ca02ed00b3e423f6710d2ee7e0d5ebb06f3ecf368a8",
         entrypoint: "transfer",
-        calldata: [receiverAddress, formatAmount(amount, 6)],
-      },
-    ];
+        calldata: [ADMIN_ADDRESS, formatAmount(adminFee, 6)],
+      });
+    }
+    calls.push({
+      contractAddress:
+        "0x53c91253bc9682c04929ca02ed00b3e423f6710d2ee7e0d5ebb06f3ecf368a8",
+      entrypoint: "transfer",
+      calldata: [receiverAddress, formatAmount(amount, 6)],
+    });
 
     console.info("Preparing formatted calls for AVNU:", calls);
     const formattedCalls = formatCall(calls);
