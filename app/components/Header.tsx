@@ -86,7 +86,7 @@ function Header() {
   ];
 
   const NavLink = ({ href, children, onClick, className = "" }: NavLinkProps) => (
-    <Link href={href} onClick={onClick} passHref legacyBehavior>
+    <Link href={href} onClick={onClick} passHref>
       <motion.a
         whileHover={{ y: -1 }}
         whileTap={{ scale: 0.98 }}
@@ -136,7 +136,7 @@ function Header() {
               transition={{ duration: 0.6, ease: "easeOut" }}
               className="flex items-center space-x-2 sm:space-x-3"
             >
-              <Link href="/" className="flex items-center space-x-2 sm:space-x-3 group" passHref legacyBehavior>
+              <Link href="/" className="flex items-center space-x-2 sm:space-x-3 group" passHref>
                 <motion.a
                   whileHover={{ scale: 1.05 }}
                   transition={{ duration: 0.2 }}
@@ -176,25 +176,34 @@ function Header() {
                 </motion.div>
               ))}
 
+              {/* Centered Dashboard Link */}
+              {user && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.4, delay: 0.3 }}
+                  className="mx-8"
+                >
+                  <NavLink href="/dashboard">
+                    Dashboard
+                  </NavLink>
+                </motion.div>
+              )}
+
               <motion.div
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4, delay: 0.4 }}
-                className="flex items center space-x-4 ml-4 lg:ml-6 pl-4 lg:pl-6 border-l border-[#EAE5DC]/20"
+                className="flex items-center space-x-4 ml-4 lg:ml-6 pl-4 lg:pl-6 border-l border-[#EAE5DC]/20"
               >
                 {user ? (
-                  <>
-                    <NavLink href="/dashboard">
-                      Dashboard
-                    </NavLink>
-                    <Button 
-                      onClick={handleLogout}
-                      variant="ghost"
-                      className="hover:shadow-[0_0_0_1px_white]"
-                    >
-                      Sign Out
-                    </Button>
-                  </>
+                  <Button 
+                    onClick={handleLogout}
+                    variant="ghost"
+                    className="hover:shadow-[0_0_0_1px_white]"
+                  >
+                    Sign Out
+                  </Button>
                 ) : (
                   <Button 
                     onClick={() => router.push("/login")}
@@ -301,7 +310,7 @@ function Header() {
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ duration: 0.3, delay: index * 0.1 }}
                     >
-                      <Link href={item.href} passHref legacyBehavior>
+                      <Link href={item.href} passHref>
                         <motion.a
                           onClick={closeMenu}
                           className="text-[#EAE5DC] hover:text-white text-xl sm:text-2xl font-medium tracking-wide transition-colors duration-200"
@@ -319,7 +328,7 @@ function Header() {
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ duration: 0.3, delay: 0.3 }}
                     >
-                      <Link href="/dashboard" passHref legacyBehavior>
+                      <Link href="/dashboard" passHref>
                         <motion.a
                           onClick={closeMenu}
                           className="text-[#EAE5DC] hover:text-white text-xl sm:text-2xl font-medium tracking-wide transition-colors duration-200"

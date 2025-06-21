@@ -49,7 +49,7 @@ export async function POST(req: NextRequest) {
 
   try {
     const body = await req.json();
-    const { name, email, secret, hash_secret, plan_id, uid } = body;
+    const { name, email, secret, hash_secret, uid } = body;
 
     if (!name || !email || !secret || !hash_secret || !uid) {
       console.warn("Missing required fields in request body");
@@ -68,7 +68,6 @@ export async function POST(req: NextRequest) {
           email,
           secret,
           hash_secret,
-          plan_id: plan_id ?? null,
           uid,
         },
       ])
