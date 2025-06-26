@@ -137,27 +137,30 @@ function Header() {
               className="flex items-center space-x-2 sm:space-x-3"
             >
               <Link href="/" className="flex items-center space-x-2 sm:space-x-3 group" passHref>
-                <motion.a
-                  whileHover={{ scale: 1.05 }}
-                  transition={{ duration: 0.2 }}
-                  className="relative"
-                >
-                  <Image
-                    src="/images/CavosLogo.png"
-                    alt="Cavos Logo"
-                    width={32}
-                    height={28}
-                    className="w-8 h-auto sm:w-9"
-                    priority
-                  />
-                </motion.a>
+                <a className="relative" tabIndex={0}>
+                  <motion.div
+                    whileHover={{ scale: 1.05 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    <Image
+                      src="/images/CavosLogo.png"
+                      alt="Cavos Logo"
+                      width={32}
+                      height={28}
+                      className="w-8 h-auto sm:w-9"
+                      priority
+                    />
+                  </motion.div>
+                </a>
               </Link>
               <Link href="/" passHref>
-                <motion.a className="xs:block">
-                  <p className={`text-[#EAE5DC] text-lg sm:text-xl font-medium tracking-wider uppercase ${romagothicbold.className}`}>
-                    Wallet Provider
-                  </p>
-                </motion.a>
+                <a className="xs:block" tabIndex={0}>
+                  <motion.div>
+                    <p className={`text-[#EAE5DC] text-lg sm:text-xl font-medium tracking-wider uppercase ${romagothicbold.className}`}>
+                      Wallet Provider
+                    </p>
+                  </motion.div>
+                </a>
               </Link>
             </motion.div>
 
