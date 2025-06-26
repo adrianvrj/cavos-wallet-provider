@@ -46,7 +46,7 @@ export async function POST(req: Request) {
         error
       );
       return NextResponse.json(
-        { message: "Unauthorized: Missing or invalid Bearer token" },
+        { message: "Unauthorized: Missing or invalid Bearer token", error: error?.message || error },
         { status: 401 }
       );
     }
@@ -112,7 +112,7 @@ export async function POST(req: Request) {
       if (!typeDataResponse.ok) {
         const errorText = await typeDataResponse.text();
         console.error("Failed to build typed data from AVNU:", errorText);
-        throw new Error("Failed to build typed data");
+        throw new Error(`Failed to build typed data: ${errorText}`);
       }
 
       const account = new Account(
@@ -159,7 +159,7 @@ export async function POST(req: Request) {
       if (!executeResponse.ok) {
         const errorText = await executeResponse.text();
         console.error("AVNU execution error:", errorText);
-        throw new Error("Failed to execute deployment");
+        throw new Error(`Failed to execute deployment: ${errorText}`);
       }
 
       const executeResult = await executeResponse.json();
@@ -176,12 +176,12 @@ export async function POST(req: Request) {
       });
     } catch (error) {
       console.error("Error during execution logic:", error);
-      return NextResponse.json({ data: error }, { status: 500 });
+      return NextResponse.json({ error: error instanceof Error ? error.message : String(error), stack: error instanceof Error ? error.stack : undefined }, { status: 500 });
     }
   } catch (error: any) {
     console.error("Unhandled server error:", error);
     return NextResponse.json(
-      { message: error.message || "Internal Server Error" },
+      { message: error.message || "Internal Server Error", stack: error.stack },
       { status: 500 }
     );
   }
