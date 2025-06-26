@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { RpcProvider, Account } from "starknet";
+import { RpcProvider, Account, byteArray } from "starknet";
 import { formatCall } from "@avnu/gasless-sdk";
 import { decryptSecretWithPin } from "@/app/lib/utils";
 import { createClient } from "@supabase/supabase-js";
@@ -56,6 +56,13 @@ export async function POST(req: Request) {
     let { network, calls, address, hashedPk } = await req.json();
     console.log("Received request data:", { network, address });
 
+    // Si calls tiene un elemento string, aplícale byteArray.byteArrayFromString
+    if (Array.isArray(calls)) {
+      calls = calls.map((call) =>
+        typeof call === "string" ? byteArray.byteArrayFromString(call) : call
+      );
+    }
+
     if (!network) {
       return NextResponse.json(
         { message: "Network is required" },
@@ -90,6 +97,7 @@ export async function POST(req: Request) {
 
     try {
       console.log("Formatting call data for AVNU...");
+      
       const cavosCalls = formatCall(calls);
       console.log("Formatted calls:", JSON.stringify(cavosCalls));
 
