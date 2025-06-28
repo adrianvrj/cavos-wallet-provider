@@ -3,6 +3,15 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { FiCopy, FiCheck, FiMenu, FiX } from "react-icons/fi";
+import {
+  Copy,
+  Check,
+  ExternalLink,
+  Package,
+  Code,
+  Zap,
+  BarChart3,
+} from "lucide-react";
 
 // Enhanced CodeSnippet component with language tabs and copy functionality
 const CodeSnippet = ({
@@ -16,6 +25,7 @@ const CodeSnippet = ({
   method = "POST",
   endpoint,
   parameters = [],
+  icon: Icon,
 }: {
   title: string;
   description: string;
@@ -32,6 +42,7 @@ const CodeSnippet = ({
     required: boolean;
     description: string;
   }>;
+  icon?: any;
 }) => {
   const [activeTab, setActiveTab] = useState("curl");
   const [copied, setCopied] = useState(false);
@@ -71,13 +82,20 @@ const CodeSnippet = ({
   return (
     <div className="bg-gradient-to-br from-[#EAE5DC]/5 to-[#EAE5DC]/10 border border-[#EAE5DC]/20 rounded-2xl p-4 md:p-8 mb-8">
       <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-4 md:mb-6">
-        <div>
-          <h3 className="text-xl md:text-2xl font-semibold text-[#EAE5DC]">
-            {title}
-          </h3>
-          <p className="text-[#EAE5DC]/80 mt-1 text-sm md:text-base">
-            {description}
-          </p>
+        <div className="flex items-start gap-4">
+          {Icon && (
+            <div className="bg-[#EAE5DC]/10 p-3 rounded-lg shrink-0">
+              <Icon className="w-6 h-6 text-[#EAE5DC]" />
+            </div>
+          )}
+          <div>
+            <h3 className="text-xl md:text-2xl font-semibold text-[#EAE5DC]">
+              {title}
+            </h3>
+            <p className="text-[#EAE5DC]/80 mt-1 text-sm md:text-base">
+              {description}
+            </p>
+          </div>
         </div>
         {endpoint && (
           <div className="mt-2 md:mt-0">
@@ -239,6 +257,173 @@ const CodeSnippet = ({
           </div>
         </div>
       )}
+    </div>
+  );
+};
+
+// New SDK-specific CodeSnippet component
+const SDKCodeSnippet = ({
+  title,
+  description,
+  ts,
+  js,
+  python,
+  curl,
+  response,
+  icon: Icon,
+}: {
+  title: string;
+  description: string;
+  ts?: string;
+  js?: string;
+  python?: string;
+  curl?: string;
+  response?: string;
+  icon?: any;
+}) => {
+  const [activeTab, setActiveTab] = useState("ts");
+  const [copiedStates, setCopiedStates] = useState<Record<string, boolean>>({});
+
+  const copyToClipboard = async (text: string, key: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopiedStates((prev) => ({ ...prev, [key]: true }));
+      setTimeout(() => {
+        setCopiedStates((prev) => ({ ...prev, [key]: false }));
+      }, 2000);
+    } catch (err) {
+      console.error("Failed to copy text: ", err);
+    }
+  };
+
+  const tabs = [
+    { id: "ts", label: "TypeScript", content: ts },
+    { id: "js", label: "JavaScript", content: js },
+    { id: "python", label: "Python", content: python },
+    { id: "curl", label: "cURL", content: curl },
+    { id: "response", label: "Response", content: response },
+  ].filter((tab) => tab.content);
+
+  return (
+    <div className="bg-gradient-to-br from-[#EAE5DC]/5 to-[#EAE5DC]/10 border border-[#EAE5DC]/20 rounded-xl p-6 lg:p-8 transition-all duration-300 hover:border-[#EAE5DC]/30">
+      <div className="flex items-start gap-4 mb-6">
+        {Icon && (
+          <div className="bg-[#EAE5DC]/10 p-3 rounded-lg shrink-0">
+            <Icon className="w-6 h-6 text-[#EAE5DC]" />
+          </div>
+        )}
+        <div>
+          <h3 className="text-xl md:text-2xl font-semibold text-[#EAE5DC] mb-2">
+            {title}
+          </h3>
+          <p className="text-[#EAE5DC]/70 text-base md:text-lg">
+            {description}
+          </p>
+        </div>
+      </div>
+
+      <div className="bg-[#0A0A08] border border-[#EAE5DC]/20 rounded-lg overflow-hidden">
+        <div className="flex flex-wrap border-b border-[#EAE5DC]/20 bg-[#000000]/50">
+          {tabs.map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={`px-4 py-3 text-sm font-medium transition-all duration-200 ${
+                activeTab === tab.id
+                  ? "text-[#EAE5DC] bg-[#EAE5DC]/10 border-b-2 border-[#EAE5DC]"
+                  : "text-[#EAE5DC]/60 hover:text-[#EAE5DC]/80 hover:bg-[#EAE5DC]/5"
+              }`}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
+
+        <div className="relative">
+          <button
+            onClick={() =>
+              copyToClipboard(
+                tabs.find((t) => t.id === activeTab)?.content || "",
+                activeTab
+              )
+            }
+            className="absolute top-3 right-3 p-2 rounded-lg bg-[#EAE5DC]/10 hover:bg-[#EAE5DC]/20 transition-colors duration-200 z-10"
+          >
+            {copiedStates[activeTab] ? (
+              <Check className="w-4 h-4 text-green-400" />
+            ) : (
+              <Copy className="w-4 h-4 text-[#EAE5DC]/70" />
+            )}
+          </button>
+
+          <pre className="p-4 pt-12 overflow-x-auto">
+            <code className="text-[#EAE5DC] font-mono text-sm leading-relaxed">
+              {tabs.find((t) => t.id === activeTab)?.content}
+            </code>
+          </pre>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// QuickStartStep component for SDK section
+const QuickStartStep = ({
+  number,
+  title,
+  description,
+  code,
+  children,
+}: {
+  number: string;
+  title: string;
+  description: string;
+  code?: string;
+  children?: React.ReactNode;
+}) => {
+  const [copied, setCopied] = useState(false);
+
+  const copyToClipboard = async (text: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      console.error("Failed to copy text: ", err);
+    }
+  };
+
+  return (
+    <div className="bg-[#000000]/30 border border-[#EAE5DC]/20 rounded-xl p-6 hover:border-[#EAE5DC]/30 transition-all duration-300">
+      <div className="flex items-start gap-4 mb-4">
+        <div className="bg-[#EAE5DC] text-[#000000] rounded-full w-8 h-8 flex items-center justify-center font-bold text-sm shrink-0">
+          {number}
+        </div>
+        <div className="flex-1">
+          <h4 className="text-lg font-semibold text-[#EAE5DC] mb-2">{title}</h4>
+          <p className="text-[#EAE5DC]/70 text-sm md:text-base mb-4">
+            {description}
+          </p>
+
+          {code && (
+            <div className="bg-[#0A0A08] border border-[#EAE5DC]/10 rounded-lg p-4 relative">
+              <button
+                onClick={() => copyToClipboard(code)}
+                className="absolute top-2 right-2 p-1.5 rounded bg-[#EAE5DC]/10 hover:bg-[#EAE5DC]/20 transition-colors"
+              >
+                {copied ? (
+                  <Check className="w-4 h-4 text-green-400" />
+                ) : (
+                  <Copy className="w-4 h-4 text-[#EAE5DC]/70" />
+                )}
+              </button>
+              <code className="text-[#EAE5DC] font-mono text-sm">{code}</code>
+            </div>
+          )}
+
+          {children}
+        </div>
+      </div>
     </div>
   );
 };
@@ -599,7 +784,7 @@ export default function DocsPage() {
                             Zero gas fees for end users
                           </li>
                           <li className="flex items-center">
-                            <span className="w-2 h-2 bg-[#EA5DC] rounded-full mr-2 md:mr-3"></span>
+                            <span className="w-2 h-2 bg-[#EAE5DC] rounded-full mr-2 md:mr-3"></span>
                             Improved user experience
                           </li>
                           <li className="flex items-center">
@@ -1050,150 +1235,365 @@ print(response.json())`}
 
               {/* Section 5: SDK */}
               {activeSection === "sdk" && (
-                <div className="space-y-6 md:space-y-8">
+                <div className="space-y-8 md:space-y-12">
+                  {/* Header */}
                   <div>
-                    <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4 md:mb-6 text-[#EAE5DC]">
+                    <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 md:mb-6 text-[#EAE5DC]">
                       SDK
                     </h2>
-                    <div className="w-12 md:w-16 h-1 bg-[#EAE5DC] mb-6 md:mb-8"></div>
+                    <div className="w-16 md:w-20 h-1 bg-gradient-to-r from-[#EAE5DC] to-[#EAE5DC]/50 mb-6 md:mb-8 rounded-full"></div>
+                    <p className="text-[#EAE5DC]/80 text-lg md:text-xl max-w-3xl">
+                      Streamline your development with our comprehensive SDK.
+                      Built for Node.js and TypeScript, it provides everything
+                      you need to integrate wallet functionality into your
+                      applications.
+                    </p>
                   </div>
 
-                  <div className="bg-gradient-to-br from-[#EAE5DC]/5 to-[#EAE5DC]/10 border border-[#EAE5DC]/20 rounded-xl md:rounded-2xl p-4 md:p-6 lg:p-8">
-                    <h3 className="text-xl md:text-2xl font-semibold text-[#EAE5DC] mb-4 md:mb-6">
-                      Cavos Service SDK
-                    </h3>
-                    <p className="text-[#EAE5DC]/80 mb-6 md:mb-8 text-base md:text-lg">
-                      A Node.js/TypeScript SDK for interacting with the external
-                      endpoints of the cavos-wallet-provider service. Simplify
-                      your integration with pre-built functions for wallet
-                      deployment, transaction execution, and more. Available on{" "}
-                      <a
-                        href="https://www.npmjs.com/package/cavos-service-sdk"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-[#EAE5DC] underline hover:text-[#EAE5DC]/80"
-                      >
-                        npm
-                      </a>
-                      .
-                    </p>
-
-                    <div className="space-y-4 md:space-y-6">
-                      <div className="bg-[#000000]/50 border border-[#EAE5DC]/20 rounded-lg p-4 md:p-6">
-                        <h4 className="text-base md:text-lg font-semibold mb-2 md:mb-4 flex items-center text-[#EAE5DC]">
-                          <span className="bg-[#EAE5DC] text-[#000000] rounded-full w-6 h-6 md:w-8 md:h-8 flex items-center justify-center mr-3 md:mr-4 text-xs md:text-sm font-bold">
-                            1
-                          </span>
-                          Installation
-                        </h4>
-                        <p className="text-[#EAE5DC]/70 text-sm md:text-base ml-9 md:ml-12 mb-2 md:mb-4">
-                          Install the SDK using npm:
+                  {/* SDK Overview */}
+                  <div className="bg-gradient-to-br from-[#EAE5DC]/8 to-[#EAE5DC]/12 border border-[#EAE5DC]/25 rounded-2xl p-6 md:p-8 lg:p-10">
+                    <div className="flex items-start gap-6 mb-8">
+                      <div className="bg-[#EAE5DC]/15 p-4 rounded-xl">
+                        <Package className="w-8 h-8 text-[#EAE5DC]" />
+                      </div>
+                      <div>
+                        <h3 className="text-2xl md:text-3xl font-semibold text-[#EAE5DC] mb-3">
+                          Cavos Service SDK
+                        </h3>
+                        <p className="text-[#EAE5DC]/80 text-base md:text-lg mb-6 max-w-2xl">
+                          A powerful Node.js/TypeScript SDK for seamless
+                          integration with cavos-wallet-provider service. Deploy
+                          wallets, execute transactions, and manage your
+                          blockchain infrastructure with ease.
                         </p>
-                        <div className="bg-[#0A0A08] border border-[#EAE5DC]/10 rounded-lg p-2 md:p-4 ml-9 md:ml-12">
-                          <code className="text-[#EAE5DC] font-mono text-xs md:text-sm">
-                            npm install cavos-service-sdk
-                          </code>
+                        <div className="flex items-center gap-4">
+                          <a
+                            href="https://www.npmjs.com/package/cavos-service-sdk"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-2 bg-[#EAE5DC] text-[#000000] px-4 py-2 rounded-lg font-medium hover:bg-[#EAE5DC]/90 transition-colors"
+                          >
+                            <Package className="w-4 h-4" />
+                            View on npm
+                            <ExternalLink className="w-4 h-4" />
+                          </a>
+                          <div className="flex items-center gap-2 text-[#EAE5DC]/60 text-sm">
+                            <div className="w-2 h-2 bg-green-400 rounded-full"></div>
+                            TypeScript Ready
+                          </div>
                         </div>
                       </div>
+                    </div>
 
-                      <div className="bg-[#000000]/50 border border-[#EAE5DC]/20 rounded-lg p-4 md:p-6">
-                        <h4 className="text-base md:text-lg font-semibold mb-2 md:mb-4 flex items-center text-[#EAE5DC]">
-                          <span className="bg-[#EAE5DC] text-[#000000] rounded-full w-6 h-6 md:w-8 md:h-8 flex items-center justify-center mr-3 md:mr-4 text-xs md:text-sm font-bold">
-                            2
-                          </span>
-                          Import Functions
-                        </h4>
-                        <p className="text-[#EAE5DC]/70 text-sm md:text-base ml-9 md:nml-12 mb-2 md:mb-4">
-                          Import the functions you need:
-                        </p>
-                        <div className="bg-[#0A0A08] border border-[#EAE5DC]/10 rounded-lg p-2 md:p-4 ml-9 md:ml-12">
-                          <code className="text-[#EAE5DC] font-mono text-xs md:text-sm">
-                            {importCode}
-                          </code>
-                        </div>
+                    {/* Quick Start */}
+                    <div className="space-y-6">
+                      <h4 className="text-xl font-semibold text-[#EAE5DC] mb-6">
+                        Quick Start
+                      </h4>
+
+                      <div className="grid gap-6">
+                        <QuickStartStep
+                          number="1"
+                          title="Installation"
+                          description="Install the SDK using your preferred package manager:"
+                          code="npm install cavos-service-sdk"
+                        />
+
+                        <QuickStartStep
+                          number="2"
+                          title="Import Functions"
+                          description="Import the functions you need for your application:"
+                          code={importCode}
+                        />
+
+                        <QuickStartStep
+                          number="3"
+                          title="Start Building"
+                          description="You're ready to start integrating wallet functionality into your application. Check out the examples below for common use cases."
+                        />
                       </div>
                     </div>
                   </div>
 
-                  <div className="space-y-6 md:space-y-8">
-                    <CodeSnippet
+                  {/* Code Examples */}
+                  <div className="space-y-8">
+                    <div className="text-center mb-8">
+                      <h3 className="text-2xl md:text-3xl font-semibold text-[#EAE5DC] mb-4">
+                        Code Examples
+                      </h3>
+                      <p className="text-[#EAE5DC]/70 text-lg max-w-2xl mx-auto">
+                        Explore practical examples to get started quickly with
+                        common SDK operations.
+                      </p>
+                    </div>
+
+                    <SDKCodeSnippet
                       title="Deploy Wallet"
-                      description="Creates a new wallet under your organization using the SDK."
-                      ts={
-                        "import { deployWallet } from 'cavos-service-sdk';\n\n// Deploy a wallet\nconst wallet = await deployWallet('sepolia', 'your-api-key');\n\nconsole.log('Wallet deployed:', wallet);\n// Output: { address: '0x3bbf55d3b5d7f5907ef3a80fbbe0578c360fb41ec48a6fb340fd36d9eff822b', network: 'sepolia', transactionHash: '0x123...abc' }"
-                      }
-                      js={
-                        "import { deployWallet } from 'cavos-service-sdk';\n\n// Deploy a wallet\nconst wallet = await deployWallet('sepolia', 'your-api-key');\n\nconsole.log('Wallet deployed:', wallet);"
-                      }
-                      python={
-                        '# Python equivalent using requests\nimport requests\n\ndef deploy_wallet(network, api_key):\n    url = "https://services.cavos.xyz/api/v1/external/deploy"\n    headers = {\n        "Content-Type": "application/json",\n        "Authorization": api_key\n    }\n    data = {"network": network}\n    \n    response = requests.post(url, headers=headers, json=data)\n    return response.json()\n\nwallet = deploy_wallet(\'sepolia\', \'your-api-key\')\nprint(\'Wallet deployed:\', wallet)'
-                      }
-                      curl={
-                        "curl --location 'https://services.cavos.xyz/api/v1/external/deploy' \\\n--header 'Content-Type: application/json' \\\n--header 'Authorization: your-api-key' \\\n--data '{\n    \"network\": \"sepolia\"\n}'"
-                      }
-                      response={
-                        '{\n  "message": "Wallet deployed successfully",\n  "data": {\n    "address": "0x3bbf55d3b5d7f5907ef3a80fbbe0578c360fb41ec48a6fb340fd36d9eff822b",\n    "network": "sepolia",\n    "transactionHash": "0x123...abc"\n  }\n}'
-                      }
+                      description="Create a new wallet under your organization with a single function call."
+                      icon={Zap}
+                      ts={`import { deployWallet } from 'cavos-service-sdk';
+
+// Deploy a wallet
+const wallet = await deployWallet('sepolia', 'your-api-key');
+
+console.log('Wallet deployed:', wallet);
+// Output: { 
+//   address: '0x3bbf55d3b5d7f5907ef3a80fbbe0578c360fb41ec48a6fb340fd36d9eff822b', 
+//   network: 'sepolia', 
+//   transactionHash: '0x123...abc' 
+// }`}
+                      js={`import { deployWallet } from 'cavos-service-sdk';
+
+// Deploy a wallet
+const wallet = await deployWallet('sepolia', 'your-api-key');
+
+console.log('Wallet deployed:', wallet);`}
+                      python={`# Python equivalent using requests
+import requests
+
+def deploy_wallet(network, api_key):
+    url = "https://services.cavos.xyz/api/v1/external/deploy"
+    headers = {
+        "Content-Type": "application/json",
+        "Authorization": api_key
+    }
+    data = {"network": network}
+    
+    response = requests.post(url, headers=headers, json=data)
+    return response.json()
+
+wallet = deploy_wallet('sepolia', 'your-api-key')
+print('Wallet deployed:', wallet)`}
+                      curl={`curl --location 'https://services.cavos.xyz/api/v1/external/deploy' \\
+--header 'Content-Type: application/json' \\
+--header 'Authorization: your-api-key' \\
+--data '{
+    "network": "sepolia"
+}'`}
+                      response={`{
+  "message": "Wallet deployed successfully",
+  "data": {
+    "address": "0x3bbf55d3b5d7f5907ef3a80fbbe0578c360fb41ec48a6fb340fd36d9eff822b",
+    "network": "sepolia",
+    "transactionHash": "0x123...abc"
+  }
+}`}
                     />
 
-                    <CodeSnippet
+                    <SDKCodeSnippet
                       title="Execute Action"
-                      description="Executes smart contract calls using the SDK."
-                      ts={
-                        "import { executeAction } from 'cavos-service-sdk';\n\n// Execute an action\nconst calls = [{\n  contractAddress: '0x04718f5a0Fc34cC1AF16A1cdee98fFB20C31f5cD61D6Ab07201858f4287c938D',\n  entrypoint: 'approve',\n  calldata: [\n    '0x028795e04b2abaf61266faa81cc02d4d1a6ef8574fef383cdf6185ca580648aa',\n    '0x0',\n    '0x0'\n  ]\n}];\n\nconst result = await executeAction(\n  'sepolia', \n  calls, \n  '0x3bbf55d3b5d7f5907ef3a80fbbe0578c360fb41ec48a6fb340fd36d9eff822b', \n  'U2FsdGVkX19a5enJlf4YG9nEpj/oBwftKrEf99zF1BC9I7jmVoVoyFx6DxrXHcL0e3rr3YYXVhMkWWF2gFtWF+UcCzcKNTxh+2FGrrbr00M=', \n  'your-api-key'\n);\n\nconsole.log('Transaction executed:', result);\n// Output: { transaction_hash: '0x123...abc' }"
-                      }
-                      js={
-                        "import { executeAction } from 'cavos-service-sdk';\n\n// Execute an action\nconst calls = [{\n  contractAddress: '0x04718f5a0Fc34cC1AF16A1cdee98fFB20C31f5cD61D6Ab07201858f4287c938D',\n  entrypoint: 'approve',\n  calldata: [\n    '0x028795e04b2abaf61266faa81cc02d4d1a6ef8574fef383cdf6185ca580648aa',\n    '0x0',\n    '0x0'\n  ]\n}];\n\nconst result = await executeAction(\n  'sepolia', \n  calls, \n  '0x3bbf55d3b5d7f5907ef3a80fbbe0578c360fb41ec48a6fb340fd36d9eff822b', \n  'U2FsdGVkX19a5enJlf4YG9nEpj/oBwftKrEf99zF1BC9I7jmVoVoyFx6DxrXHcL0e3rr3YYXVhMkWWF2gFtWF+UcCzcKNTxh+2FGrrbr00M=', \n  'your-api-key'\n);\n\nconsole.log('Transaction executed:', result);"
-                      }
-                      python={
-                        '# Python equivalent using requests\nimport requests\n\ndef execute_action(network, calls, address, hashed_pk, api_key):\n    url = "https://services.cavos.xyz/api/v1/external/execute"\n    headers = {\n        "Content-Type": "application/json",\n        "Authorization": api_key\n    }\n    data = {\n        "network": network,\n        "calls": calls,\n        "address": address,\n        "hashedPk": hashed_pk\n    }\n    \n    response = requests.post(url, headers=headers, json=data)\n    return response.json()\n\ncalls = [{\n    "contractAddress": "0x04718f5a0Fc34cC1AF16A1cdee98fFB20C31f5cD61D6Ab07201858f4287c938D",\n    "entrypoint": "approve",\n    "calldata": [\n        "0x028795e04b2abaf61266faa81cc02d4d1a6ef8574fef383cdf6185ca580648aa",\n        "0x0",\n        "0x0"\n    ]\n}]\n\nresult = execute_action(\n    \'sepolia\', \n    calls, \n    \'0x3bbf55d3b5d7f5907ef3a80fbbe0578c360fb41ec48a6fb340fd36d9eff822b\', \n    \'U2FsdGVkX19a5enJlf4YG9nEpj/oBwftKrEf99zF1BC9I7jmVoVoyFx6DxrXHcL0e3rr3YYXVhMkWWF2gFtWF+UcCzcKNTxh+2FGrrbr00M=\', \n    \'your-api-key\'\n)\nprint(\'Transaction executed:\', result)'
-                      }
-                      curl={
-                        'curl --location \'https://services.cavos.xyz/api/v1/external/execute\' \\\n--header \'Content-Type: application/json\' \\\n--header \'Authorization: your-api-key\' \\\n--data \'{\n    "network": "sepolia",\n    "calls": [\n        {\n            "contractAddress": "0x04718f5a0Fc34cC1AF16A1cdee98fFB20C31f5cD61D6Ab07201858f4287c938D",\n            "entrypoint": "approve",\n            "calldata": [\n                "0x028795e04b2abaf61266faa81cc02d4d1a6ef8574fef383cdf6185ca580648aa",\n                "0x0",\n                "0x0"\n            ]\n        }\n    ],\n    "address": "0x3bbf55d3b5d7f5907ef3a80fbbe0578c360fb41ec48a6fb340fd36d9eff822b",\n    "hashedPk": "U2FsdGVkX19a5enJlf4YG9nEpj/oBwftKrEf99zF1BC9I7jmVoVoyFx6DxrXHcL0e3rr3YYXVhMkWWF2gFtWF+UcCzcKNTxh+2FGrrbr00M="\n}\''
-                      }
-                      response={
-                        '{\n  "message": "Transaction executed successfully",\n  "data": {\n    "transaction_hash": "0x123...abc"\n  }\n}'
-                      }
+                      description="Execute smart contract calls with multiple operations in a single transaction."
+                      icon={Code}
+                      ts={`import { executeAction } from 'cavos-service-sdk';
+
+// Execute an action
+const calls = [{
+  contractAddress: '0x04718f5a0Fc34cC1AF16A1cdee98fFB20C31f5cD61D6Ab07201858f4287c938D',
+  entrypoint: 'approve',
+  calldata: [
+    '0x028795e04b2abaf61266faa81cc02d4d1a6ef8574fef383cdf6185ca580648aa',
+    '0x0',
+    '0x0'
+  ]
+}];
+
+const result = await executeAction(
+  'sepolia', 
+  calls, 
+  '0x3bbf55d3b5d7f5907ef3a80fbbe0578c360fb41ec48a6fb340fd36d9eff822b', 
+  'U2FsdGVkX19a5enJlf4YG9nEpj/oBwftKrEf99zF1BC9I7jmVoVoyFx6DxrXHcL0e3rr3YYXVhMkWWF2gFtWF+UcCzcKNTxh+2FGrrbr00M=', 
+  'your-api-key'
+);
+
+console.log('Transaction executed:', result);
+// Output: { transaction_hash: '0x123...abc' }`}
+                      js={`import { executeAction } from 'cavos-service-sdk';
+
+// Execute an action
+const calls = [{
+  contractAddress: '0x04718f5a0Fc34cC1AF16A1cdee98fFB20C31f5cD61D6Ab07201858f4287c938D',
+  entrypoint: 'approve',
+  calldata: [
+    '0x028795e04b2abaf61266faa81cc02d4d1a6ef8574fef383cdf6185ca580648aa',
+    '0x0',
+    '0x0'
+  ]
+}];
+
+const result = await executeAction(
+  'sepolia', 
+  calls, 
+  '0x3bbf55d3b5d7f5907ef3a80fbbe0578c360fb41ec48a6fb340fd36d9eff822b', 
+  'U2FsdGVkX19a5enJlf4YG9nEpj/oBwftKrEf99zF1BC9I7jmVoVoyFx6DxrXHcL0e3rr3YYXVhMkWWF2gFtWF+UcCzcKNTxh+2FGrrbr00M=', 
+  'your-api-key'
+);
+
+console.log('Transaction executed:', result);`}
+                      python={`# Python equivalent using requests
+import requests
+
+def execute_action(network, calls, address, hashed_pk, api_key):
+    url = "https://services.cavos.xyz/api/v1/external/execute"
+    headers = {
+        "Content-Type": "application/json",
+        "Authorization": api_key
+    }
+    data = {
+        "network": network,
+        "calls": calls,
+        "address": address,
+        "hashedPk": hashed_pk
+    }
+    
+    response = requests.post(url, headers=headers, json=data)
+    return response.json()
+
+calls = [{
+    "contractAddress": "0x04718f5a0Fc34cC1AF16A1cdee98fFB20C31f5cD61D6Ab07201858f4287c938D",
+    "entrypoint": "approve",
+    "calldata": [
+        "0x028795e04b2abaf61266faa81cc02d4d1a6ef8574fef383cdf6185ca580648aa",
+        "0x0",
+        "0x0"
+    ]
+}]
+
+result = execute_action(
+    'sepolia', 
+    calls, 
+    '0x3bbf55d3b5d7f5907ef3a80fbbe0578c360fb41ec48a6fb340fd36d9eff822b', 
+    'U2FsdGVkX19a5enJlf4YG9nEpj/oBwftKrEf99zF1BC9I7jmVoVoyFx6DxrXHcL0e3rr3YYXVhMkWWF2gFtWF+UcCzcKNTxh+2FGrrbr00M=', 
+    'your-api-key'
+)
+print('Transaction executed:', result)`}
+                      curl={`curl --location 'https://services.cavos.xyz/api/v1/external/execute' \\
+--header 'Content-Type: application/json' \\
+--header 'Authorization: your-api-key' \\
+--data '{
+    "network": "sepolia",
+    "calls": [
+        {
+            "contractAddress": "0x04718f5a0Fc34cC1AF16A1cdee98fFB20C31f5cD61D6Ab07201858f4287c938D",
+            "entrypoint": "approve",
+            "calldata": [
+                "0x028795e04b2abaf61266faa81cc02d4d1a6ef8574fef383cdf6185ca580648aa",
+                "0x0",
+                "0x0"
+            ]
+        }
+    ],
+    "address": "0x3bbf55d3b5d7f5907ef3a80fbbe0578c360fb41ec48a6fb340fd36d9eff822b",
+    "hashedPk": "U2FsdGVkX19a5enJlf4YG9nEpj/oBwftKrEf99zF1BC9I7jmVoVoyFx6DxrXHcL0e3rr3YYXVhMkWWF2gFtWF+UcCzcKNTxh+2FGrrbr00M="
+}'`}
+                      response={`{
+  "message": "Transaction executed successfully",
+  "data": {
+    "transaction_hash": "0x123...abc"
+  }
+}`}
                     />
 
-                    <CodeSnippet
+                    <SDKCodeSnippet
                       title="Get Transaction Transfers"
-                      description="Fetches token transfer events for a given transaction hash using the SDK."
-                      ts={
-                        'import { getTransactionTransfers } from \'cavos-service-sdk\';\n\n// Get transaction transfers\nconst transfers = await getTransactionTransfers(\'0x123...\', \'sepolia\');\n\nconsole.log(\'Transfers:\', transfers);\n// Output: [\n//   {\n//     from_address: "0x123...",\n//     to_address: "0x456...",\n//     token_address: "0x789...",\n//     amount: "1000000000000000000",\n//     token_name: "Ether",\n//     token_symbol: "ETH",\n//     token_decimals: 18\n//   }\n// ]'
-                      }
-                      js={
-                        "import { getTransactionTransfers } from 'cavos-service-sdk';\n\n// Get transaction transfers\nconst transfers = await getTransactionTransfers('0x123...', 'sepolia');\n\nconsole.log('Transfers:', transfers);"
-                      }
-                      python={
-                        "# Python equivalent using requests\nimport requests\n\ndef get_transaction_transfers(tx_hash, network='mainnet'):\n    url = \"https://services.cavos.xyz/api/v1/external/tx\"\n    params = {\n        \"txHash\": tx_hash,\n        \"network\": network\n    }\n    \n    response = requests.get(url, params=params)\n    return response.json()\n\ntransfers = get_transaction_transfers('0x123...', 'sepolia')\nprint('Transfers:', transfers)"
-                      }
-                      curl={
-                        "curl --location 'https://services.cavos.xyz/api/v1/external/tx?txHash=0x123...&network=sepolia'"
-                      }
-                      response={
-                        '{\n  "transfers": [\n    {\n      "from_address": "0x123...",\n      "to_address": "0x456...",\n      "token_address": "0x789...",\n      "amount": "1000000000000000000",\n      "token_name": "Ether",\n      "token_symbol": "ETH",\n      "token_decimals": 18\n    }\n  ]\n}'
-                      }
+                      description="Retrieve detailed token transfer events for any transaction hash."
+                      icon={BarChart3}
+                      ts={`import { getTransactionTransfers } from 'cavos-service-sdk';
+
+// Get transaction transfers
+const transfers = await getTransactionTransfers('0x123...', 'sepolia');
+
+console.log('Transfers:', transfers);
+// Output: [
+//   {
+//     from_address: "0x123...",
+//     to_address: "0x456...",
+//     token_address: "0x789...",
+//     amount: "1000000000000000000",
+//     token_name: "Ether",
+//     token_symbol: "ETH",
+//     token_decimals: 18
+//   }
+// ]`}
+                      js={`import { getTransactionTransfers } from 'cavos-service-sdk';
+
+// Get transaction transfers
+const transfers = await getTransactionTransfers('0x123...', 'sepolia');
+
+console.log('Transfers:', transfers);`}
+                      python={`# Python equivalent using requests
+import requests
+
+def get_transaction_transfers(tx_hash, network='mainnet'):
+    url = "https://services.cavos.xyz/api/v1/external/tx"
+    params = {
+        "txHash": tx_hash,
+        "network": network
+    }
+    
+    response = requests.get(url, params=params)
+    return response.json()
+
+transfers = get_transaction_transfers('0x123...', 'sepolia')
+print('Transfers:', transfers)`}
+                      curl={`curl --location 'https://services.cavos.xyz/api/v1/external/tx?txHash=0x123...&network=sepolia'`}
+                      response={`{
+  "transfers": [
+    {
+      "from_address": "0x123...",
+      "to_address": "0x456...",
+      "token_address": "0x789...",
+      "amount": "1000000000000000000",
+      "token_name": "Ether",
+      "token_symbol": "ETH",
+      "token_decimals": 18
+    }
+  ]
+}`}
                     />
 
-                    <CodeSnippet
+                    <SDKCodeSnippet
                       title="Get Wallet Counts"
-                      description="Returns the number of wallets deployed on Sepolia and Mainnet for your organization using the SDK."
-                      ts={
-                        "import { getWalletCounts } from 'cavos-service-sdk';\n\n// Get wallet counts\nconst counts = await getWalletCounts();\n\nconsole.log('Wallet counts:', counts);\n// Output: [\n//   { network: \"sepolia\", count: 2 },\n//   { network: \"mainnet\", count: 3 }\n// ]"
-                      }
-                      js={
-                        "import { getWalletCounts } from 'cavos-service-sdk';\n\n// Get wallet counts\nconst counts = await getWalletCounts();\n\nconsole.log('Wallet counts:', counts);"
-                      }
-                      python={
-                        '# Python equivalent using requests\nimport requests\n\ndef get_wallet_counts():\n    url = "https://services.cavos.xyz/api/v1/external/wallets/count"\n    headers = {\n        "Authorization": "your-api-key"\n    }\n    \n    response = requests.get(url, headers=headers)\n    return response.json()\n\ncounts = get_wallet_counts()\nprint(\'Wallet counts:\', counts)'
-                      }
-                      curl={
-                        "curl --location 'https://services.cavos.xyz/api/v1/external/wallets/count' \\\n--header 'Authorization: your-api-key'"
-                      }
-                      response={
-                        '{\n  "message": "Wallet counts fetched successfully",\n  "data": [\n    { "network": "sepolia", "count": 2 },\n    { "network": "mainnet", "count": 3 }\n  ]\n}'
-                      }
+                      description="Monitor your organization's wallet deployment statistics across networks."
+                      icon={BarChart3}
+                      ts={`import { getWalletCounts } from 'cavos-service-sdk';
+
+// Get wallet counts
+const counts = await getWalletCounts();
+
+console.log('Wallet counts:', counts);
+// Output: [
+//   { network: "sepolia", count: 2 },
+//   { network: "mainnet", count: 3 }
+// ]`}
+                      js={`import { getWalletCounts } from 'cavos-service-sdk';
+
+// Get wallet counts
+const counts = await getWalletCounts();
+
+console.log('Wallet counts:', counts);`}
+                      python={`# Python equivalent using requests
+import requests
+
+def get_wallet_counts():
+    url = "https://services.cavos.xyz/api/v1/external/wallets/count"
+    headers = {
+        "Authorization": "your-api-key"
+    }
+    
+    response = requests.get(url, headers=headers)
+    return response.json()
+
+counts = get_wallet_counts()
+print('Wallet counts:', counts)`}
+                      curl={`curl --location 'https://services.cavos.xyz/api/v1/external/wallets/count' \\
+--header 'Authorization: your-api-key'`}
+                      response={`{
+  "message": "Wallet counts fetched successfully",
+  "data": [
+    { "network": "sepolia", "count": 2 },
+    { "network": "mainnet", "count": 3 }
+  ]
+}`}
                     />
                   </div>
                 </div>
