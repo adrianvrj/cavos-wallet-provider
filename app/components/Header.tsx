@@ -34,7 +34,7 @@ function Header() {
     const handleScroll = () => {
       setScrolled(window.scrollY > 10);
     };
-    
+
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
@@ -85,24 +85,38 @@ function Header() {
     { href: "/search/tx", label: "Explorer" },
   ];
 
-  const NavLink = ({ href, children, onClick, className = "" }: NavLinkProps) => (
+  const NavLink = ({
+    href,
+    children,
+    onClick,
+    className = "",
+  }: NavLinkProps) => (
     <Link href={href} onClick={onClick} passHref>
-      <motion.a
+      <motion.div
         whileHover={{ y: -1 }}
         whileTap={{ scale: 0.98 }}
         className={`text-[#EAE5DC] hover:text-white transition-all duration-300 cursor-pointer relative group ${className}`}
       >
         {children}
         <span className="absolute -bottom-1 left-0 w-0 h-[2px] bg-[#EAE5DC] transition-all duration-300 group-hover:w-full group-hover:bg-white" />
-      </motion.a>
+      </motion.div>
     </Link>
   );
 
-  const Button = ({ onClick, children, variant = "primary", className = "", ...props }: ButtonProps) => {
-    const baseClasses = "px-4 py-2 rounded-lg font-medium transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-transparent text-sm sm:text-base sm:px-5 sm:py-2.5";
+  const Button = ({
+    onClick,
+    children,
+    variant = "primary",
+    className = "",
+    ...props
+  }: ButtonProps) => {
+    const baseClasses =
+      "px-4 py-2 rounded-lg font-medium transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-transparent text-sm sm:text-base sm:px-5 sm:py-2.5";
     const variants = {
-      primary: "bg-[#EAE5DC] text-black hover:bg-white hover:shadow-[0_4px_20px_rgba(234,229,220,0.3)] focus:ring-[#EAE5DC]",
-      ghost: "text-[#EAE5DC] hover:text-white hover:bg-white/5 border border-[#EAE5DC]/30 hover:border-white/30",
+      primary:
+        "bg-[#EAE5DC] text-black hover:bg-white hover:shadow-[0_4px_20px_rgba(234,229,220,0.3)] focus:ring-[#EAE5DC]",
+      ghost:
+        "text-[#EAE5DC] hover:text-white hover:bg-white/5 border border-[#EAE5DC]/30 hover:border-white/30",
     };
 
     return (
@@ -120,10 +134,10 @@ function Header() {
 
   return (
     <>
-      <header 
+      <header
         className={`w-full fixed top-0 left-0 z-50 transition-all duration-300 ${
-          scrolled 
-            ? "bg-[#000000] shadow-lg border-b border-[#EAE5DC]/10" 
+          scrolled
+            ? "bg-[#000000] shadow-lg border-b border-[#EAE5DC]/10"
             : "bg-[#000000]"
         }`}
       >
@@ -136,31 +150,33 @@ function Header() {
               transition={{ duration: 0.6, ease: "easeOut" }}
               className="flex items-center space-x-2 sm:space-x-3"
             >
-              <Link href="/" className="flex items-center space-x-2 sm:space-x-3 group" passHref>
-                <a className="relative" tabIndex={0}>
-                  <motion.div
-                    whileHover={{ scale: 1.05 }}
-                    transition={{ duration: 0.2 }}
-                  >
-                    <Image
-                      src="/images/CavosLogo.png"
-                      alt="Cavos Logo"
-                      width={32}
-                      height={28}
-                      className="w-8 h-auto sm:w-9"
-                      priority
-                    />
-                  </motion.div>
-                </a>
+              <Link
+                href="/"
+                className="flex items-center space-x-2 sm:space-x-3 group"
+                passHref
+              >
+                <motion.div
+                  whileHover={{ scale: 1.05 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <Image
+                    src="/images/CavosLogo.png"
+                    alt="Cavos Logo"
+                    width={32}
+                    height={28}
+                    className="w-8 h-auto sm:w-9"
+                    priority
+                  />
+                </motion.div>
               </Link>
               <Link href="/" passHref>
-                <a className="xs:block" tabIndex={0}>
-                  <motion.div>
-                    <p className={`text-[#EAE5DC] text-lg sm:text-xl font-medium tracking-wider uppercase ${romagothicbold.className}`}>
-                      Wallet Provider
-                    </p>
-                  </motion.div>
-                </a>
+                <motion.div>
+                  <p
+                    className={`text-[#EAE5DC] text-lg sm:text-xl font-medium tracking-wider uppercase ${romagothicbold.className}`}
+                  >
+                    Wallet Provider
+                  </p>
+                </motion.div>
               </Link>
             </motion.div>
 
@@ -173,9 +189,7 @@ function Header() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.4, delay: index * 0.1 }}
                 >
-                  <NavLink href={item.href}>
-                    {item.label}
-                  </NavLink>
+                  <NavLink href={item.href}>{item.label}</NavLink>
                 </motion.div>
               ))}
 
@@ -187,9 +201,7 @@ function Header() {
                   transition={{ duration: 0.4, delay: 0.3 }}
                   className="mx-8"
                 >
-                  <NavLink href="/dashboard">
-                    Dashboard
-                  </NavLink>
+                  <NavLink href="/dashboard">Dashboard</NavLink>
                 </motion.div>
               )}
 
@@ -200,7 +212,7 @@ function Header() {
                 className="flex items-center space-x-4 ml-4 lg:ml-6 pl-4 lg:pl-6 border-l border-[#EAE5DC]/20"
               >
                 {user ? (
-                  <Button 
+                  <Button
                     onClick={handleLogout}
                     variant="ghost"
                     className="hover:shadow-[0_0_0_1px_white]"
@@ -208,7 +220,7 @@ function Header() {
                     Sign Out
                   </Button>
                 ) : (
-                  <Button 
+                  <Button
                     onClick={() => router.push("/login")}
                     className="hover:shadow-[0_4px_20px_rgba(234,229,220,0.4)]"
                   >
@@ -230,17 +242,27 @@ function Header() {
             >
               <motion.span
                 animate={
-                  isMenuOpen 
-                    ? { rotate: 45, y: 6, width: "20px", backgroundColor: "#ffffff" } 
-                    : { rotate: 0, y: -4, width: "20px", backgroundColor: "#EAE5DC" }
+                  isMenuOpen
+                    ? {
+                        rotate: 45,
+                        y: 6,
+                        width: "20px",
+                        backgroundColor: "#ffffff",
+                      }
+                    : {
+                        rotate: 0,
+                        y: -4,
+                        width: "20px",
+                        backgroundColor: "#EAE5DC",
+                      }
                 }
                 transition={{ duration: 0.3, ease: "easeInOut" }}
                 className="h-[2px] block absolute rounded-full group-hover:bg-white"
               />
               <motion.span
                 animate={
-                  isMenuOpen 
-                    ? { opacity: 0, width: "0px" } 
+                  isMenuOpen
+                    ? { opacity: 0, width: "0px" }
                     : { opacity: 1, width: "16px", backgroundColor: "#EAE5DC" }
                 }
                 transition={{ duration: 0.2 }}
@@ -248,9 +270,19 @@ function Header() {
               />
               <motion.span
                 animate={
-                  isMenuOpen 
-                    ? { rotate: -45, y: -6, width: "20px", backgroundColor: "#ffffff" } 
-                    : { rotate: 0, y: 4, width: "12px", backgroundColor: "#EAE5DC" }
+                  isMenuOpen
+                    ? {
+                        rotate: -45,
+                        y: -6,
+                        width: "20px",
+                        backgroundColor: "#ffffff",
+                      }
+                    : {
+                        rotate: 0,
+                        y: 4,
+                        width: "12px",
+                        backgroundColor: "#EAE5DC",
+                      }
                 }
                 transition={{ duration: 0.3, ease: "easeInOut" }}
                 className="h-[2px] block absolute rounded-full group-hover:bg-white"
@@ -272,7 +304,7 @@ function Header() {
                 className="md:hidden fixed inset-0 bg-[#000000] z-40"
                 onClick={closeMenu}
               />
-              
+
               {/* Mobile Menu */}
               <motion.div
                 initial={{ x: "100%" }}
@@ -298,8 +330,18 @@ function Header() {
                     className="p-2 rounded-md text-[#EAE5DC] hover:text-white hover:bg-white/10 transition-colors duration-200"
                     aria-label="Close menu"
                   >
-                    <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    <svg
+                      className="w-6 h-6"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M6 18L18 6M6 6l12 12"
+                      />
                     </svg>
                   </button>
                 </div>
