@@ -54,14 +54,8 @@ export async function POST(req: Request) {
     console.log(`Organization authorized with ID: ${org.id}`);
 
     let { network, calls, address, hashedPk } = await req.json();
-    console.log("Received request data:", { network, address });
-
-    // Si calls tiene un elemento string, aplícale byteArray.byteArrayFromString
-    if (Array.isArray(calls)) {
-      calls = calls.map((call) =>
-        typeof call === "string" ? byteArray.byteArrayFromString(call) : call
-      );
-    }
+    console.log("Received request data:", { network, address, });
+    console.log("Calls data:", calls[0].calldata);
 
     if (!network) {
       return NextResponse.json(
@@ -97,7 +91,6 @@ export async function POST(req: Request) {
 
     try {
       console.log("Formatting call data for AVNU...");
-      
       const cavosCalls = formatCall(calls);
       console.log("Formatted calls:", JSON.stringify(cavosCalls));
 
